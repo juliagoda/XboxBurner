@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/about.png</file>
+        <file>images/burn.png</file>
+        <file>images/cancel.png</file>
+        <file>images/cdrom.png</file>
+        <file>images/copy.png</file>
+        <file>images/dvd_drive.png</file>
+        <file>images/dvdr.png</file>
+        <file>images/exit.png</file>
+        <file>images/log.png</file>
+        <file>images/open.png</file>
+        <file>images/reset.png</file>
+        <file>images/save.png</file>
+        <file>images/verify.png</file>
+        <file>images/xbox.png</file>
+        <file>images/xbox360.png</file>
+        <file>images/XBoxBurner.png</file>
+    </qresource>
+</RCC>
