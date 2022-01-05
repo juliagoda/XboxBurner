@@ -7,13 +7,24 @@ on:
       branches: [ main ]
 
 jobs:
-  build:
+  build-ubuntu-qt5:
     runs-on: ubuntu-latest
     steps:
       - name: install XboxBurner
         uses: actions/checkout@v2
       - name: install dependencies
         run: sudo apt install -y qtbase5-dev dvd+rw-tools
+      - name: run qmake
+        run: qmake .
+      - name: make
+        run: make
+  build-fedora-qt5:
+    runs-on: fcos
+    steps:
+      - name: install XboxBurner
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: sudo yum install -y qt5-qtbase dvd+rw-tools
       - name: run qmake
         run: qmake .
       - name: make
