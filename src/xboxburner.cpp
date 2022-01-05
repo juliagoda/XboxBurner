@@ -30,6 +30,8 @@
 #include <QMenu>
 #include <QCompleter>
 #include <QFileSystemModel>
+#include <QRegularExpression>
+#include <QtGlobal>
 
 XBoxBurner::XBoxBurner(QWidget *parent) : QMainWindow(parent), ui(new Ui::XBoxBurner) {
     ui->setupUi(this);
@@ -179,7 +181,7 @@ void XBoxBurner::startBurn_triggered() {
     else {
         if (!ui->lineEdit_imagePath->text().isEmpty() && !ui->lineEdit_burnerPath->text().isEmpty() && !ui->comboBox_writeSpeed->currentText().isEmpty()) {
             if (QMessageBox::question(this, tr("Start burn process"), tr("Are you sure that you want to burn the image?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok) {
-                ui->plainTextEdit_log->appendPlainText("Burn process started at " + QDateTime::currentDateTime().toString(Qt::SystemLocaleShortDate));
+                ui->plainTextEdit_log->appendPlainText("Burn process started at " + QLocale().dateFormat(QLocale::ShortFormat));
 
                 ui->toolBar->actions().at(3)->setIcon(QIcon(":/images/cancel.png"));
                 ui->toolBar->actions().at(3)->setText(tr("&Cancel"));
@@ -323,10 +325,11 @@ void XBoxBurner::getMediaInfo_readyReadStandardOutput() {
     mediaInfo.append(data.split("\n"));
 }
 
-void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus) {
-    QRegExp burner_line("INQUIRY:\\s*(.+)");
-    QRegExp media_line("(?:MOUNTED MEDIA|MEDIA BOOK TYPE|MEDIA ID):\\s*(.+)");
-    QRegExp speed_line("WRITE SPEED\\s*\\#\\d\\:\\s*((?:[0-9]|[,.])+)[xX].*");
+void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus)
+{
+    QRegularExpression burner_line("INQUIRY:\\s*(.+)");
+    QRegularExpression media_line("(?:MOUNTED MEDIA|MEDIA BOOK TYPE|MEDIA ID):\\s*(.+)");
+    QRegularExpression speed_line("WRITE SPEED\\s*\\#\\d\\:\\s*((?:[0-9]|[,.])+)[xX].*");
     QString burner_txt;
     QStringList media_txt;
 
@@ -334,15 +337,20 @@ void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitS
     ui->label_info->clear();
 
     if (exitCode >= 0 && exitStatus == 0) {
-        for (int i = 0; i < mediaInfo.size(); i++) {
-            if (burner_line.exactMatch(mediaInfo.at(i).simplified().toUpper())) {
-                    burner_txt = burner_line.capturedTexts().at(1).simplified();
+        for (int i = 0; i < mediaInfo.size(); i++)
+        {
+            QRegularExpressionMatch burner_line_match = burner_line.match(mediaInfo.at(i).simplified().toUpper());
+            QRegularExpressionMatch media_line_match = media_line.match(mediaInfo.at(i).simplified().toUpper());
+            QRegularExpressionMatch speed_line_match = speed_line.match(mediaInfo.at(i).simplified().toUpper());
+
+            if (burner_line_match.hasMatch()) {
+                    burner_txt = burner_line_match.captured(0).simplified();
             }
-            else if (media_line.exactMatch(mediaInfo.at(i).simplified().toUpper())) {
-                    media_txt.append(media_line.capturedTexts().at(1).simplified().split(","));
+            else if (media_line_match.hasMatch()) {
+                    media_txt.append(media_line_match.captured(0).simplified().split(","));
             }
-            else if (speed_line.exactMatch(mediaInfo.at(i).simplified().toUpper())) {
-                ui->comboBox_writeSpeed->addItem(QIcon(":/images/cdrom.png"), speed_line.capturedTexts().at(1).simplified());
+            else if (speed_line_match.hasMatch()) {
+                ui->comboBox_writeSpeed->addItem(QIcon(":/images/cdrom.png"), speed_line_match.captured(0).simplified());
             }
         }
 
@@ -350,7 +358,7 @@ void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitS
             burner_txt = tr("Not available!");
         }
 
-        if (media_txt.filter(QRegExp(".*\\S.*")).isEmpty()) {
+        if (media_txt.filter(QRegularExpression(".*\\S.*")).isEmpty()) {
             media_txt.append(tr("Not available!"));
         }
 
@@ -363,7 +371,7 @@ void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitS
         showStatusBarMessage(errorMessage);
     }
 
-    ui->label_info->setText(tr("Burner: <font color=grey>%1</font><br>Media: <font color=grey>%2</font>").arg(burner_txt).arg(media_txt.filter(QRegExp(".*\\S.*")).join(",").simplified().replace(", ", ",")));
+    ui->label_info->setText(tr("Burner: <font color=grey>%1</font><br>Media: <font color=grey>%2</font>").arg(burner_txt).arg(media_txt.filter(QRegularExpression(".*\\S.*")).join(",").simplified().replace(", ", ",")));
 
     delete checkMediaProcess;
 }
@@ -448,7 +456,11 @@ void XBoxBurner::truncateImage() {
 
         startBusy();
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QFuture<bool> backupFuture = QtConcurrent::run(this, &XBoxBurner::createBackup);
+#else
+        QFuture<bool> backupFuture = QtConcurrent::run(&XBoxBurner::createBackup, this);
+#endif
         backupFutureWatcher.setFuture(backupFuture);
     }
     else {
@@ -497,7 +509,7 @@ void XBoxBurner::resizeImage() {
 void XBoxBurner::burnProcess_readyReadStandardOutput() {
     int burnProgress, rbuProgress, ubuProgress;
     QString growisofsData;
-    QRegExp progressLine("\\d+/\\d+\\s*\\(\\s*((?:[0-9]|[.,])+)\\%\\s*\\)\\s*@((?:[0-9]|[.,])+)[xX],\\s+\\w+\\s+((?:[0-9]|[:?])+)\\s+\\w+\\s+((?:[0-9]|[.,])+)\\%\\s+\\w+\\s+((?:[0-9]|[.,])+).*");
+    QRegularExpression progressLine("\\d+/\\d+\\s*\\(\\s*((?:[0-9]|[.,])+)\\%\\s*\\)\\s*@((?:[0-9]|[.,])+)[xX],\\s+\\w+\\s+((?:[0-9]|[:?])+)\\s+\\w+\\s+((?:[0-9]|[.,])+)\\%\\s+\\w+\\s+((?:[0-9]|[.,])+).*");
 
     while (burnProcess->canReadLine()) {
         growisofsData = burnProcess->readAll().simplified().data();
@@ -523,11 +535,14 @@ void XBoxBurner::burnProcess_readyReadStandardOutput() {
         else if (growisofsData.contains("reloading tray")) {
             showStatusBarMessage(tr("Reloading tray..."));
         }
-        else if (!growisofsData.isEmpty()) {
-            if (progressLine.exactMatch(growisofsData)) {
-                burnProgress = progressLine.capturedTexts().at(1).simplified().toFloat();
-                rbuProgress = progressLine.capturedTexts().at(4).simplified().toFloat();
-                ubuProgress = progressLine.capturedTexts().at(5).simplified().toFloat();
+        else if (!growisofsData.isEmpty())
+        {
+            QRegularExpressionMatch progress_line_match = progressLine.match(growisofsData);
+
+            if (progress_line_match.hasMatch()) {
+                burnProgress = progress_line_match.captured(0).simplified().toFloat();
+                rbuProgress = progress_line_match.captured(3).simplified().toFloat();
+                ubuProgress = progress_line_match.captured(4).simplified().toFloat();
 
                 if (burnProgress > 0 && burnProgress <= 100) {
                     ui->progressBar_burn->setValue(burnProgress);
@@ -543,8 +558,8 @@ void XBoxBurner::burnProcess_readyReadStandardOutput() {
 
                 const QString image = ui->lineEdit_imagePath->text().simplified().mid(ui->lineEdit_imagePath->text().simplified().lastIndexOf("/") + 1, ui->lineEdit_imagePath->text().simplified().length() - ui->lineEdit_imagePath->text().simplified().lastIndexOf("/"));
                 const QString drive = ui->lineEdit_burnerPath->text().simplified();
-                const QString speed = progressLine.capturedTexts().at(2).simplified();
-                const QString eta = progressLine.capturedTexts().at(3).simplified();
+                const QString speed = progress_line_match.captured(1).simplified();
+                const QString eta = progress_line_match.captured(2).simplified();
 
                 if (eta == "??:??") {
                     showStatusBarMessage(tr("Preparing burn process..."));
@@ -598,8 +613,13 @@ void XBoxBurner::verify() {
 
     startBusy();
 
-    if (imageMd5sum.isEmpty()) {
+    if (imageMd5sum.isEmpty())
+    {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QFuture<QString> imageFuture = QtConcurrent::run(this, &XBoxBurner::calculatingImageMD5);
+#else
+        QFuture<QString> imageFuture = QtConcurrent::run(&XBoxBurner::calculatingImageMD5, this);
+#endif
         imageFutureWatcher.setFuture(imageFuture);
     }
     else {
@@ -609,7 +629,11 @@ void XBoxBurner::verify() {
 
         ui->progressBar_burn->setValue(0);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QFuture<QString> dvdFuture = QtConcurrent::run(this, &XBoxBurner::calculatingDvdMD5);
+#else
+        QFuture<QString> dvdFuture = QtConcurrent::run(&XBoxBurner::calculatingDvdMD5, this);
+#endif
         dvdFutureWatcher.setFuture(dvdFuture);
     }
 }
@@ -681,7 +705,12 @@ void XBoxBurner::calculatingImageMD5_finished() {
 
         ui->progressBar_burn->setValue(0);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QFuture<QString> dvdFuture = QtConcurrent::run(this, &XBoxBurner::calculatingDvdMD5);
+#else
+        QFuture<QString> dvdFuture = QtConcurrent::run(&XBoxBurner::calculatingDvdMD5, this);
+#endif
+
         dvdFutureWatcher.setFuture(dvdFuture);
     }
 }
