@@ -29,3 +29,14 @@ jobs:
         run: qmake .
       - name: make
         run: make
+  build-fedora-qt6:
+    runs-on: fcos
+    steps:
+      - name: install XboxBurner
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: sudo yum install -y qt6-qtbase dvd+rw-tools
+      - name: run qmake6
+        run: qmake6 .
+      - name: make
+        run: make
