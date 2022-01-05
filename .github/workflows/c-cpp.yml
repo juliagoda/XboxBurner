@@ -8,10 +8,11 @@ on:
 
 jobs:
   build:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v2
+    runs-on: ubuntu-latest
+    steps:
       - name: install XboxBurner
-      run: sudo apt install -y qtbase5-dev dvd+rw-tools
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: sudo apt install -y qtbase5-dev dvd+rw-tools
       - name: make
-      run: make
+        run: make
