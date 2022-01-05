@@ -23,6 +23,8 @@
 #define XBOXBURNER_H
 
 #include <QtGui>
+#include <QMainWindow>
+
 #include "global.h"
 
 #ifdef Q_OS_WIN

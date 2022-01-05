@@ -16,7 +16,7 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "xboxburner.h"
 
 int main(int argc, char *argv[]) {

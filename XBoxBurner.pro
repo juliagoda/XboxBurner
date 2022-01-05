@@ -1,11 +1,6 @@
-SOURCES   += src/main.cpp src/xboxburner.cpp
-HEADERS   += src/xboxburner.h src/global.h
-FORMS     += resources/ui/xboxburner.ui
-RESOURCES += resources/xboxburner.qrc
-
 TEMPLATE     = app
 TARGET       = XBoxBurner
-QT          += core gui
+QT          += core gui widgets concurrent
 DESTDIR      = bin
 INCLUDEPATH  = src
 OBJECTS_DIR  = build/o
@@ -14,6 +9,11 @@ MOC_DIR      = build/moc
 RCC_DIR      = build/rcc
 CODECFORTR   = UTF-8
 CODECFORSRC  = UTF-8
+
+SOURCES   += src/main.cpp src/xboxburner.cpp
+HEADERS   += src/xboxburner.h src/global.h
+FORMS     += resources/ui/xboxburner.ui
+RESOURCES += resources/xboxburner.qrc
 
 linux-g++ {
   target.path    = /usr/bin

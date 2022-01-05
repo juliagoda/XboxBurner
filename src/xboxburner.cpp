@@ -22,6 +22,15 @@
 #include "xboxburner.h"
 #include "ui_xboxburner.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QtConcurrent>
+#include <QAction>
+#include <QMenu>
+#include <QCompleter>
+#include <QFileSystemModel>
+
 XBoxBurner::XBoxBurner(QWidget *parent) : QMainWindow(parent), ui(new Ui::XBoxBurner) {
     ui->setupUi(this);
 
@@ -41,13 +50,18 @@ XBoxBurner::XBoxBurner(QWidget *parent) : QMainWindow(parent), ui(new Ui::XBoxBu
     connect(this, SIGNAL(md5SumProgress(qint64)), this, SLOT(calculatingMD5_progress(qint64)));
 
     QCompleter *imagePathCompleter = new QCompleter(this);
-    imagePathCompleter->setModel(new QDirModel(QStringList() << "*.iso" << "*.img" << "*.cdr", QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDir::DirsFirst | QDir::Name, imagePathCompleter));
+    QFileSystemModel* cd_format_model = new QFileSystemModel(imagePathCompleter);
+    cd_format_model->setNameFilters(QStringList() << "*.iso" << "*.img" << "*.cdr");
+    cd_format_model->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+    imagePathCompleter->setModel(cd_format_model);
     imagePathCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     imagePathCompleter->setMaxVisibleItems(12);
     ui->lineEdit_imagePath->setCompleter(imagePathCompleter);
 
     QCompleter *burnerPathCompleter = new QCompleter(this);
-    burnerPathCompleter->setModel(new QDirModel(QStringList(), QDir::AllDirs | QDir::NoDotAndDotDot, QDir::Name, burnerPathCompleter));
+    QFileSystemModel* buner_paths_model = new QFileSystemModel(burnerPathCompleter);
+    cd_format_model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
+    burnerPathCompleter->setModel(buner_paths_model);
     burnerPathCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     burnerPathCompleter->setMaxVisibleItems(12);
     ui->lineEdit_burnerPath->setCompleter(burnerPathCompleter);
