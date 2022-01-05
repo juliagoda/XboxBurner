@@ -13,7 +13,7 @@ XboxBurner is a graphics program that allows you to burn game images for Xbox Cl
 [![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/juliagoda/XboxBurner)](https://github.com/juliagoda/XboxBurner/pulls)  
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)  
 
-The original old source is [here](https://sourceforge.net/projects/xboxburner/)  
+The original old source of the original author ([dynup](https://sourceforge.net/u/dynup/profile/)) is [here](https://sourceforge.net/projects/xboxburner/)  
 
 <br/>  
 
