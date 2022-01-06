@@ -18,3 +18,14 @@ jobs:
         run: qmake .
       - name: make
         run: make
+  build-macos-qt5:
+    runs-on: 	macos-latest
+    steps:
+      - name: install XboxBurner
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: sudo port install -y qt5-qtbase dvdrw-tools
+      - name: run qmake
+        run: qmake .
+      - name: make
+        run: make
