@@ -24,7 +24,7 @@ jobs:
       - name: install XboxBurner
         uses: actions/checkout@v2
       - name: install dependencies
-        run: brew install qt@5  dvdrw-tools
+        run: brew install qt@5  dvd+rw-tools
       - name: run qmake
         run: qmake .
       - name: make
