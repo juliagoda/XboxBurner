@@ -71,6 +71,7 @@ jobs:
           key: qt5-bin
       - name: Preparations
         shell: pwsh
+        if: ${{steps.mingw32-cache.outputs.cache-hit}}==False
         run: | 
          Invoke-Webrequest -Uri https://www.7-zip.org/a/7z2107-x64.msi -OutFile .\7z2107-x64.msi
          msiexec /i 7z2107-x64.msi /l*vx log.txt /quiet
@@ -83,8 +84,7 @@ jobs:
         run: $env:Path += ";.\mingw-w64\mingw64\mingw64\bin"
       - name: Download Qt5
         shell: pwsh
-        env:
-         QT5-CACHE-HIT: ${{steps.qt5-cache.outputs.cache-hit}}
+        if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: |
          & $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://platform.activestate.com/dl/cli/pdli01/install.ps1'))) -activate-default juliagoda/ActivePerl-5.28
          Invoke-Webrequest -Uri https://download.qt.io/archive/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip -OutFile .\qtbase-everywhere-src-5.15.2.zip
@@ -94,14 +94,12 @@ jobs:
          Expand-Archive jom.zip .
       - name: Qt5 Configuration
         shell: pwsh
-        env:
-         CACHE-HIT: ${{steps.qt5-cache.outputs.cache-hit}}
+        if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: |
          configure -confirm-license -platform win32-g++ -opensource -nomake tests -nomake examples -no-openvg -no-openssl -no-opengl -no-dbus
       - name: Build Qt5 Base 
         shell: pwsh
-        env:
-         CACHE-HIT: ${{steps.qt5-cache.outputs.cache-hit}}
+        if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: |
          mingw32-make
          cd .. 
