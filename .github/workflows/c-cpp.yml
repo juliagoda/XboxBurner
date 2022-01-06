@@ -72,9 +72,9 @@ jobs:
       - name: Preparations
         shell: cmd
         env:
-         CACHE-HIT: ${{steps.mingw32-cache.outputs.cache-hit}}
+         MINGW-CACHE-HIT: ${{steps.mingw32-cache.outputs.cache-hit}}
         run: 
-         IF %CACHE-HIT% EQU FALSE (
+         IF NOT DEFINED %MINGW-CACHE-HIT% (
          powershell -c "Invoke-Webrequest -Uri 'https://www.7-zip.org/a/7z2107-x64.msi' -OutFile '.\7za.msi'"
          msiexec /i 7za.msi /l*vx log.txt /quiet
          set PATH="C:\Program Files\7-Zip";%PATH%
@@ -84,9 +84,9 @@ jobs:
       - name: Download Qt5
         shell: cmd
         env:
-         CACHE-HIT: ${{steps.qt5-cache.outputs.cache-hit}}
+         QT5-CACHE-HIT: ${{steps.qt5-cache.outputs.cache-hit}}
         run: |
-         IF %CACHE-HIT% EQU FALSE (
+         IF NOT DEFINED %QT5-CACHE-HIT% (
          powershell -Command "& $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://platform.activestate.com/dl/cli/pdli01/install.ps1'))) -activate-default juliagoda/ActivePerl-5.28"
          powershell -c "Invoke-Webrequest -Uri 'https://download.qt.io/archive/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip' -OutFile .\qtbase-everywhere-src-5.15.2.zip"
          tar -xf qtbase-everywhere-src-5.15.2.zip
@@ -98,14 +98,14 @@ jobs:
         env:
          CACHE-HIT: ${{steps.qt5-cache.outputs.cache-hit}}
         run: |
-         IF %CACHE-HIT% EQU FALSE (
+         IF NOT DEFINED %QT5-CACHE-HIT% (
          configure -confirm-license -platform win32-g++ -opensource -nomake tests -nomake examples -no-openvg -no-openssl -no-opengl -no-dbus )
       - name: Build Qt5 Base 
         shell: cmd
         env:
          CACHE-HIT: ${{steps.qt5-cache.outputs.cache-hit}}
         run: |
-         IF %CACHE-HIT% EQU FALSE (
+         IF NOT DEFINED %QT5-CACHE-HIT% (
          mingw32-make
          cd .. )
          set PATH=.\qtbase-everywhere-src-5.15.2\bin;%PATH%
