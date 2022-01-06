@@ -24,7 +24,12 @@ jobs:
       - name: install XboxBurner
         uses: actions/checkout@v2
       - name: install dependencies
-        run: brew install qt@5  dvd+rw-tools
+        run: |
+         brew install qt@5  dvd+rw-tools
+         echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> /Users/runner/.bash_profile
+         export LDFLAGS="-L/usr/local/opt/qt@5/lib"
+         export CPPFLAGS="-I/usr/local/opt/qt@5/include"
+         export PKG_CONFIG_PATH="/usr/local/opt/qt@5/lib/pkgconfig"
       - name: run qmake
         run: qmake .
       - name: make
