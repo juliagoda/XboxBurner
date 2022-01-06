@@ -35,3 +35,20 @@ jobs:
         run: qmake .
       - name: make
         run: make
+  build-macos-qt6:
+    runs-on: 	macos-latest
+    steps:
+      - name: install XboxBurner
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: |
+         brew install qt@6 dvd+rw-tools
+         brew link qt6 --force
+         echo 'export PATH="/usr/local/opt/qt@6/bin:$PATH"' >> /Users/runner/.bash_profile
+         export LDFLAGS="-L/usr/local/opt/qt@6/lib"
+         export CPPFLAGS="-I/usr/local/opt/qt@6/include"
+         export PKG_CONFIG_PATH="/usr/local/opt/qt@6/lib/pkgconfig"
+      - name: run qmake
+        run: qmake .
+      - name: make
+        run: make
