@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - name: Arch Linux XboxBurner
-      uses: actions/checkout@v2
+      uses: actions/checkout@v1
     - name: Preparations
       run: curl -L https://github.com/sickcodes/github-actions-archlinux/raw/master/install.sh | sh
     - name: Install dependencies
