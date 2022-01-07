@@ -31,8 +31,8 @@ jobs:
       run: |
        mkdir build
        cd build
-    - name: Run qmake
-      run: qmake ..
+    - name: Run qmake6
+      run: qmake6 ..
     - name: run make
       run: make
   build-macos-qt5:
@@ -65,8 +65,8 @@ jobs:
          export LDFLAGS="-L/usr/local/opt/qt@6/lib"
          export CPPFLAGS="-I/usr/local/opt/qt@6/include"
          export PKG_CONFIG_PATH="/usr/local/opt/qt@6/lib/pkgconfig"
-      - name: run qmake
-        run: qmake .
+      - name: run qmake6
+        run: qmake6 .
       - name: make
         run: make
   build-windows-qt5:
