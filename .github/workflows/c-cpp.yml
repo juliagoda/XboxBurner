@@ -61,45 +61,31 @@ jobs:
         uses: actions/cache@v2.1.7
         id: mingw32-cache
         with:
-          path: .\mingw-w64\mingw64\mingw64\bin
+          path: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin
           key: mingw32-bin
       - name: Qt5 Cache
         uses: actions/cache@v2.1.7
         id: qt5-cache
         with:
           path: C:\Qt\5.15.2\mingw81_64
-          key: qt5-bin
-      - name: Preparations
+          key: qt5-path
+      - name: Install Mingw Compiler
         shell: pwsh
         if: ${{steps.mingw32-cache.outputs.cache-hit}}==False
         run: | 
-         Invoke-Webrequest -Uri https://www.7-zip.org/a/7z2107-x64.msi -OutFile .\7z2107-x64.msi
-         msiexec /i 7z2107-x64.msi /l*vx log.txt /quiet
-         $env:Path += ";C:\Program Files\7-Zip"
-         Invoke-Webrequest -Uri https://github.com/2641797006/c/blob/master/GCC-zip/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z?raw=true -OutFile .\mingw.7z
-      - name: Unpack Mingw32
-        shell: cmd
-        if: ${{steps.mingw32-cache.outputs.cache-hit}}==False
-        run: 7z x mingw.7z -o.\mingw-w64\mingw64
-      - name: Set Path for MingW32
-        shell: pwsh
-        run: |
-         $env:Path += ";.\mingw-w64\mingw64\mingw64\bin"
-         mingw32-make --version
+         choco install mingw -y
       - name: Install Qt5
         shell: pwsh
         if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: choco install qt5-default -y
-      - name: Set Paths for Qt5
-        shell: pwsh
-        run: |
-         $env:QTDIR = "C:\Qt\5.15.2\mingw81_64"
-         $env:Path += ";C:\Qt\5.15.2\mingw81_64\bin"
-         $env:QMAKESPEC = "C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++"
-         qmake --version
       - name: XboxBurner Compilation
         shell: pwsh
         run: |
+         $env:QTDIR = "C:\Qt\5.15.2\mingw81_64"
+         $env:Path += ";C:\Qt\5.15.2\mingw81_64\bin;C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin"
+         $env:QMAKESPEC = "C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++"
+         qmake --version
+         mingw32-make --version
          mkdir build-xboxburner
          cd build-xboxburner
          qmake ..
