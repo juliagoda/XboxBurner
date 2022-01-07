@@ -24,7 +24,9 @@ jobs:
     - name: Arch Linux XboxBurner
       uses: actions/checkout@v1
     - name: Preparations
-      run: curl -L https://github.com/sickcodes/github-actions-archlinux/raw/master/install.sh | sh
+      run: |
+       curl -L https://github.com/sickcodes/github-actions-archlinux/raw/master/install.sh | sh
+       git clone https://github.com/sickcodes/github-actions-archlinux.git
     - name: Install dependencies
       run: sudo pacman --noconfirm -S qt6-base dvd+rw-tools
     - name: Building Preparation
