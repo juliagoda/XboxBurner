@@ -10,7 +10,7 @@ jobs:
   build-ubuntu-qt5:
     runs-on: ubuntu-latest
     steps:
-      - name: install XboxBurner
+      - name: Ubuntu XboxBurner
         uses: actions/checkout@v2
       - name: install dependencies
         run: sudo apt install -y qtbase5-dev dvd+rw-tools
@@ -21,8 +21,8 @@ jobs:
   build-archlinux-qt6:
     runs-on: ubuntu-18.04
     steps:
-    - name: Arch Linux
-    - uses: actions/checkout@v2
+    - name: Arch Linux XboxBurner
+      uses: actions/checkout@v2
     - name: Preparations
       run: curl -L https://github.com/zaoqi/github-actions-archlinux/raw/master/install.sh | sh
     - name: Install dependencies
@@ -36,9 +36,9 @@ jobs:
     - name: run make
       run: make
   build-macos-qt5:
-    runs-on: 	macos-latest
+    runs-on: macos-latest
     steps:
-      - name: install XboxBurner
+      - name: MacOSX XboxBurner
         uses: actions/checkout@v2
       - name: install dependencies
         run: |
@@ -55,7 +55,7 @@ jobs:
   build-macos-qt6:
     runs-on: 	macos-latest
     steps:
-      - name: install XboxBurner
+      - name: MacOSX XboxBurner
         uses: actions/checkout@v2
       - name: install dependencies
         run: |
@@ -72,7 +72,7 @@ jobs:
   build-windows-qt5:
     runs-on: windows-latest
     steps:
-      - name: Windows
+      - name: Windows XboxBurner
         uses: actions/checkout@v2
       - name: Mingw64 Cache
         uses: actions/cache@v2.1.7
