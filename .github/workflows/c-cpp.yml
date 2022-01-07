@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v2
       - name: install dependencies
         run: |
-         brew install qt@5  dvd+rw-tools
+         brew install qt@5 dvd+rw-tools
          brew link qt5 --force
          echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> /Users/runner/.bash_profile
          export LDFLAGS="-L/usr/local/opt/qt@5/lib"
@@ -57,12 +57,12 @@ jobs:
     steps:
       - name: Windows
         uses: actions/checkout@v2
-      - name: Mingw32 Cache
+      - name: Mingw64 Cache
         uses: actions/cache@v2.1.7
-        id: mingw32-cache
+        id: mingw64-cache
         with:
           path: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin
-          key: mingw32-bin
+          key: mingw64-bin
       - name: Qt5 Cache
         uses: actions/cache@v2.1.7
         id: qt5-cache
@@ -90,3 +90,4 @@ jobs:
          cd build-xboxburner
          qmake ..
          mingw32-make
+
