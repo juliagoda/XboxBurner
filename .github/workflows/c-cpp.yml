@@ -98,7 +98,7 @@ jobs:
          $env:QMAKESPEC = "C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++"
          qmake --version
       - name: XboxBurner Compilation
-        shell: cmd
+        shell: pwsh
         run: |
          mkdir build-xboxburner
          cd build-xboxburner
