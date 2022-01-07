@@ -71,12 +71,12 @@ jobs:
           key: qt5-path
       - name: Install Mingw Compiler
         shell: pwsh
-        if: ${{steps.mingw32-cache.outputs.cache-hit}}==False
+        if: steps.mingw64-cache.outputs.cache-hit != 'true'
         run: | 
          choco install mingw -y
       - name: Install Qt5
         shell: pwsh
-        if: ${{steps.qt5-cache.outputs.cache-hit}}==False
+        if: steps.qt5-cache.outputs.cache-hit != 'true'
         run: choco install qt5-default -y
       - name: XboxBurner Compilation
         shell: pwsh
