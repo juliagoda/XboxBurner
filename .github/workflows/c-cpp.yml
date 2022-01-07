@@ -100,7 +100,7 @@ jobs:
         shell: cmd
         if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: |
-         configure -confirm-license -platform win32-g++ -opensource -nomake tests -nomake examples -no-openvg -no-openssl -no-opengl -no-dbus
+         configure.bat -confirm-license -platform win32-g++ -opensource -nomake tests -nomake examples -no-openvg -no-openssl -no-opengl -no-dbus
       - name: Build Qt5 Base 
         shell: cmd
         if: ${{steps.qt5-cache.outputs.cache-hit}}==False
