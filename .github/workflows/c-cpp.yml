@@ -18,6 +18,22 @@ jobs:
         run: qmake .
       - name: make
         run: make
+  build-archlinux-qt6:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - name: Preparations
+      run: curl -L https://github.com/zaoqi/github-actions-archlinux/raw/master/install.sh | sh
+    - name: Install dependencies
+      run: sudo pacman --noconfirm -S qt6-base dvd+rw-tools
+    - name: Building Preparation
+      run: |
+       mkdir build
+       cd build
+    - name: Run qmake
+       qmake ..
+    - name: run make
+       make
   build-macos-qt5:
     runs-on: 	macos-latest
     steps:
