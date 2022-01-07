@@ -67,7 +67,10 @@ jobs:
         uses: actions/cache@v2.1.7
         id: qt5-cache
         with:
-          path: C:\Qt\5.15.2\mingw81_64
+          path: |
+           C:\Qt\5.15.2\mingw81_64\bin
+           C:\Qt\5.15.2\mingw81_64\lib
+           C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++
           key: qt5-path
       - name: Install Mingw Compiler
         shell: pwsh
