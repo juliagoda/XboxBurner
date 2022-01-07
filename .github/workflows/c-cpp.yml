@@ -91,7 +91,7 @@ jobs:
          Invoke-Webrequest -Uri http://qt-mirror.dannhauer.de/official_releases/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip -OutFile .\qtbase-everywhere-src-5.15.2.zip 
          tar -xf qtbase-everywhere-src-5.15.2.zip
          cd qtbase-everywhere-src-5.15.2
-         Invoke-Webrequest -Uri http://download.qt.io/official_releases/jom/jom.zip -OutFile .\jom.zip
+         Invoke-Webrequest -Uri https://www.mirrorservice.org/sites/download.qt-project.org/official_releases/jom/jom.zip -OutFile .\jom.zip
          Expand-Archive jom.zip .
       - name: Qt5 Configuration
         shell: pwsh
