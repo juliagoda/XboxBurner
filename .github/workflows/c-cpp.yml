@@ -89,7 +89,7 @@ jobs:
         if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: |
          & $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://platform.activestate.com/dl/cli/pdli01/install.ps1'))) -activate-default juliagoda/ActivePerl-5.28
-         Invoke-Webrequest -Uri https://download.qt.io/archive/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip -OutFile .\qtbase-everywhere-src-5.15.2.zip
+         Invoke-Webrequest -Uri http://qtproject.mirror.liquidtelecom.com/archive/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip -OutFile .\qtbase-everywhere-src-5.15.2.zip
          tar -xf qtbase-everywhere-src-5.15.2.zip
          cd qtbase-everywhere-src-5.15.2
          Invoke-Webrequest -Uri http://download.qt.io/official_releases/jom/jom.zip -OutFile .\jom.zip
