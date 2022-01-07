@@ -65,10 +65,10 @@ jobs:
           key: mingw64-bin
       - name: Qt5 Cache
         uses: actions/cache@v2.1.7
-        id: qt5-bin-lib-cache
+        id: qt5-bin-cache
         with:
-          path: C:\Qt\5.15.2\mingw81_64
-          key: qt5-full-path
+          path: C:\Qt\5.15.2\mingw81_64\bin
+          key: ${{ runner.os }}-qt5-bin-cache-${{ hashFiles(...) }}
       - name: Install Mingw Compiler
         shell: pwsh
         if: steps.mingw64-cache.outputs.cache-hit != 'true'
@@ -76,14 +76,13 @@ jobs:
          choco install mingw -y
       - name: Install Qt5
         shell: pwsh
-        if: steps.qt5-bin-lib-cache.outputs.cache-hit != 'true'
+        if: steps.qt5-bin-cache.outputs.cache-hit != 'true'
         run: choco install qt5-default -y
       - name: XboxBurner Compilation
         shell: pwsh
         run: |
          $env:QTDIR = "C:\Qt\5.15.2\mingw81_64"
          $env:Path += ";C:\Qt\5.15.2\mingw81_64\bin;C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin"
-         $env:QMAKESPEC = "C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++"
          qmake --version
          mingw32-make --version
          mkdir build-xboxburner
