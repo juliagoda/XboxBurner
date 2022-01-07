@@ -18,25 +18,6 @@ jobs:
         run: qmake .
       - name: make
         run: make
-  build-archlinux-qt6:
-    runs-on: ubuntu-18.04
-    steps:
-    - name: Arch Linux XboxBurner
-      uses: actions/checkout@v1
-    - name: Preparations
-      run: |
-       git clone https://github.com/sickcodes/github-actions-archlinux.git
-       curl -L https://github.com/sickcodes/github-actions-archlinux/raw/master/install.sh | sh
-    - name: Install dependencies
-      run: sudo pacman --noconfirm -S qt6-base dvd+rw-tools
-    - name: Building Preparation
-      run: |
-       mkdir build
-       cd build
-    - name: Run qmake6
-      run: qmake6 ..
-    - name: run make
-      run: make
   build-macos-qt5:
     runs-on: macos-latest
     steps:
@@ -84,13 +65,13 @@ jobs:
           key: mingw64-bin
       - name: Qt5 Cache
         uses: actions/cache@v2.1.7
-        id: qt5-cache
+        id: qt5-paths-cache
         with:
           path: |
-           C:\Qt\5.15.2\mingw81_64\bin
-           C:\Qt\5.15.2\mingw81_64\lib
-           C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++
-          key: qt5-path
+           "C:\Qt\5.15.2\mingw81_64\bin"
+           "C:\Qt\5.15.2\mingw81_64\lib"
+           "C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++"
+          key: qt5-paths
       - name: Install Mingw Compiler
         shell: pwsh
         if: steps.mingw64-cache.outputs.cache-hit != 'true'
@@ -98,7 +79,7 @@ jobs:
          choco install mingw -y
       - name: Install Qt5
         shell: pwsh
-        if: steps.qt5-cache.outputs.cache-hit != 'true'
+        if: steps.qt5-paths-cache.outputs.cache-hit != 'true'
         run: choco install qt5-default -y
       - name: XboxBurner Compilation
         shell: pwsh
