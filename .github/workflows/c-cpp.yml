@@ -88,8 +88,8 @@ jobs:
         shell: pwsh
         if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: |
-         Invoke-Webrequest -Uri https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.tar.xz -OutFile .\qtbase-everywhere-src-5.15.2.tar.xz 
-         tar -xvzf qtbase-everywhere-src-5.15.2.tar.xz
+         Invoke-Webrequest -Uri http://qt-mirror.dannhauer.de/official_releases/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip -OutFile .\qtbase-everywhere-src-5.15.2.zip 
+         tar -xf qtbase-everywhere-src-5.15.2.zip
          cd qtbase-everywhere-src-5.15.2
          Invoke-Webrequest -Uri http://download.qt.io/official_releases/jom/jom.zip -OutFile .\jom.zip
          Expand-Archive jom.zip .
