@@ -32,9 +32,9 @@ jobs:
        mkdir build
        cd build
     - name: Run qmake
-       qmake ..
+      run: qmake ..
     - name: run make
-       make
+      run: make
   build-macos-qt5:
     runs-on: 	macos-latest
     steps:
