@@ -86,7 +86,7 @@ jobs:
         run: |
          $env:Path += ";.\mingw-w64\mingw64\mingw64\bin"
          mingw32-make --version
-      - name: Download Qt5
+      - name: Install Qt5
         shell: pwsh
         if: ${{steps.qt5-cache.outputs.cache-hit}}==False
         run: choco install qt5-default -y
@@ -94,8 +94,8 @@ jobs:
         shell: pwsh
         run: |
          $env:QTDIR = "C:\Qt\5.15.2\mingw81_64"
-         $env:Path += ";%QTDIR%\bin"
-         $env:QMAKESPEC = "%QTDIR%\mkspecs\win32-g++"
+         $env:Path += ";C:\Qt\5.15.2\mingw81_64\bin"
+         $env:QMAKESPEC = "C:\Qt\5.15.2\mingw81_64\mkspecs\win32-g++"
          qmake --version
       - name: XboxBurner Compilation
         shell: cmd
