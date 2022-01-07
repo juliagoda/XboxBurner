@@ -67,7 +67,7 @@ jobs:
         uses: actions/cache@v2.1.7
         id: qt5-cache
         with:
-          path: .\qtbase-everywhere-src-5.15.2\bin
+          path: C:\Qt\5.15.2\mingw81_64
           key: qt5-bin
       - name: Preparations
         shell: pwsh
@@ -89,27 +89,14 @@ jobs:
       - name: Download Qt5
         shell: pwsh
         if: ${{steps.qt5-cache.outputs.cache-hit}}==False
-        run: |
-         & $([scriptblock]::Create((New-Object Net.WebClient).DownloadString('https://platform.activestate.com/dl/cli/pdli01/install.ps1'))) -activate-default juliagoda/ActivePerl-5.28
-         Invoke-Webrequest -Uri http://qt-mirror.dannhauer.de/official_releases/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip -OutFile .\qtbase-everywhere-src-5.15.2.zip 
-         Expand-Archive qtbase-everywhere-src-5.15.2.zip .
-         cd qtbase-everywhere-src-5.15.2
-         Invoke-Webrequest -Uri https://www.mirrorservice.org/sites/download.qt-project.org/official_releases/jom/jom.zip -OutFile .\jom.zip
-         Expand-Archive jom.zip .
-      - name: Qt5 Configuration
-        shell: cmd
-        if: ${{steps.qt5-cache.outputs.cache-hit}}==False
-        run: |
-         START "" /NORMAL configure.bat -confirm-license -platform win32-g++ -opensource -nomake tests -nomake examples -no-openvg -no-openssl -no-opengl -no-dbus
-      - name: Build Qt5 Base 
-        shell: cmd
-        if: ${{steps.qt5-cache.outputs.cache-hit}}==False
-        run: |
-         mingw32-make
-         cd .. 
-      - name: Set Path for Qt5 Binaries
+        run: choco install qt5-default -y
+      - name: Set Paths for Qt5
         shell: pwsh
-        run: $env:Path += ";.\qtbase-everywhere-src-5.15.2\bin"
+        run: |
+         $env:QTDIR = "C:\Qt\5.15.2\mingw81_64"
+         $env:Path += ";%QTDIR%\bin"
+         $env:QMAKESPEC = "%QTDIR%\mkspecs\win32-g++"
+         qmake --version
       - name: XboxBurner Compilation
         shell: cmd
         run: |
