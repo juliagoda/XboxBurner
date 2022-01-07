@@ -1,0 +1,20 @@
+# Add 'repo' label to any root file changes
+repo:
+- '*'
+
+# Add 'test' label to any change to *.spec.js files within the source dir
+documentation:
+- *.md
+
+tests:
+- tests/*
+
+workflow:
+- .github/workflows/*.yml
+- .github/*.yml
+
+bug:
+- any: ['src/*', '*.pro']
+
+arrangements:
+- resources/*
