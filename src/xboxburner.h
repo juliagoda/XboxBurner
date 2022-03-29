@@ -19,38 +19,34 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#ifndef XBOXBURNER_H
-#define XBOXBURNER_H
+#pragma once
 
-#include <QtGui>
 #include <QMainWindow>
+#include <QtGui>
 
 #include "global.h"
 
 #ifdef Q_OS_WIN
-    #include <windows.h>
-    #include <winioctl.h>
-    #include <stdio.h>
+#include <stdio.h>
+#include <windows.h>
+#include <winioctl.h>
 #endif
 
 namespace Ui {
-    class XBoxBurner;
+class XBoxBurner;
 }
 
 class XBoxBurner : public QMainWindow {
     Q_OBJECT
 
-    Ui::XBoxBurner *ui;
     QString dvdrwmediainfo, growisofs, imageMd5sum, dvdMd5sum;
     QProcess *checkMediaProcess, *burnProcess;
-    QFutureWatcher<bool> backupFutureWatcher;
-    QFutureWatcher<QString> imageFutureWatcher, dvdFutureWatcher;
+
     QStringList mediaInfo;
     qint64 md5ProgressMax;
     bool burning, verifying, cancel;
     int blockSize;
 
-    void loadSettings();
     void saveSettings();
 
     void startBurnProcess();
@@ -65,20 +61,25 @@ class XBoxBurner : public QMainWindow {
 
     void startBusy(const bool main = false);
     void stopBusy(const bool main = false);
-    void showStatusBarMessage(const QString &text);
-    void checkTools();
+
     QString growisofsVersion();
 
 public:
-    explicit XBoxBurner(QWidget *parent = 0);
+    explicit XBoxBurner(QWidget* parent = 0);
     ~XBoxBurner();
 
 protected:
     QMenu* createPopupMenu();
-    void keyReleaseEvent(QKeyEvent *keyEvent);
-    bool event(QEvent *event);
+    void keyReleaseEvent(QKeyEvent* keyEvent);
+    bool event(QEvent* event);
+    void loadSettings();
+    void checkTools();
+    void showStatusBarMessage(const QString& text);
+    Ui::XBoxBurner* ui;
+    QFutureWatcher<bool> backup_future_watcher;
+    QFutureWatcher<QString> image_future_watcher, dvd_future_watcher;
 
-private slots:
+protected slots:
     void burn_triggered();
     void log_triggered();
 
@@ -97,15 +98,15 @@ private slots:
     void getMediaInfo_readyReadStandardOutput();
     void getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus);
 
-    void createBackup_finished();
+    void logBackupCreation();
 
     void burnProcess_readyReadStandardOutput();
     void burnProcess_finished(const int exitCode, const QProcess::ExitStatus exitStatus);
 
-    void calculatingMD5_setMaximum(qint64 max);
-    void calculatingMD5_progress(qint64 value);
-    void calculatingImageMD5_finished();
-    void calculatingDvdMD5_finished();
+    void setMaximalPossibleMD5HashValue(qint64 maximal_value);
+    void calculateMD5HashForProgressBar(qint64 value);
+    void calculateMD5HashOfImage();
+    void calculateMD5HashOfDVD();
 
     void toolBar_toolButtonIconOnly();
     void toolBar_toolButtonTextOnly();
@@ -116,5 +117,3 @@ signals:
     void md5SumMaximum(qint64);
     void md5SumProgress(qint64);
 };
-
-#endif // XBOXBURNER_H

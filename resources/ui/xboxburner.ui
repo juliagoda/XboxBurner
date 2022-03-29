@@ -26,7 +26,7 @@
       </property>
       <widget class="QWidget" name="burn">
        <layout class="QVBoxLayout" name="verticalLayout_4">
-        <property name="margin">
+        <property name="margin" stdset="0">
          <number>0</number>
         </property>
         <item>
@@ -48,7 +48,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit_imagePath">
+              <widget class="QLineEdit" name="lineedit_image_path">
                <property name="toolTip">
                 <string>Set the Xbox or XBox360 game image here.
 You need to set the .iso file NOT the .dvd file! Layer break is set automatically!</string>
@@ -84,7 +84,7 @@ You need to open the .iso file NOT the .dvd file! Layer break is set automatical
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit_burnerPath"/>
+              <widget class="QLineEdit" name="lineedit_burner_path"/>
              </item>
              <item row="1" column="2">
               <widget class="QPushButton" name="pushButton_check">
@@ -509,7 +509,7 @@ This works with XGD3 truncate method only!</string>
       </widget>
       <widget class="QWidget" name="log">
        <layout class="QVBoxLayout" name="verticalLayout_5">
-        <property name="margin">
+        <property name="margin" stdset="0">
          <number>0</number>
         </property>
         <item>
@@ -698,9 +698,9 @@ This works with XGD3 truncate method only!</string>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>lineEdit_imagePath</tabstop>
+  <tabstop>lineedit_image_path</tabstop>
   <tabstop>pushButton_openImagePath</tabstop>
-  <tabstop>lineEdit_burnerPath</tabstop>
+  <tabstop>lineedit_burner_path</tabstop>
   <tabstop>pushButton_check</tabstop>
   <tabstop>comboBox_writeSpeed</tabstop>
   <tabstop>comboBox_dvdFormat</tabstop>

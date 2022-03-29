@@ -1,11 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2011 - 2012 Kai Heitkamp                                *
- *   dynup@ymail.com | dynup.de.vu                                         *
  *   Copyright (C) 2022 Jagoda "juliagoda" Górska                          *
  *   juliagoda.pl@protonmail.com                                           *
- *
- *   Based on qisoburn, Copyright (C) 2010 mycelo                          *
- *   http://code.google.com/p/qisoburn                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,18 +17,39 @@
  ***************************************************************************/
 
 #include "applicationinformations.h"
-#include "mainwindowinitializator.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 
-int main(int argc, char* argv[])
+ApplicationInformations::ApplicationInformations(QObject* parent)
+    : QObject { parent }
 {
-    QApplication app(argc, argv);
+    QCoreApplication::setOrganizationDomain("https://github.com/juliagoda/XboxBurner");
+    QCoreApplication::setOrganizationName("juliagoda");
+    QCoreApplication::setApplicationName("XBoxBurner");
+    QCoreApplication::setApplicationVersion("1.4");
+}
 
-    MainWindowInitializator main_window_initializator;
-    ApplicationInformations applications_informations;
-    main_window_initializator.setWindowTitle(applications_informations.getApplicationFullName());
-    main_window_initializator.showMainWindow();
+QString ApplicationInformations::getApplicationName()
+{
+    return QCoreApplication::applicationName();
+}
 
-    return app.exec();
+QString ApplicationInformations::getOrganizationDomain()
+{
+    return QCoreApplication::organizationDomain();
+}
+
+QString ApplicationInformations::getOrganizationName()
+{
+    return QCoreApplication::organizationName();
+}
+
+QString ApplicationInformations::getApplicationVersion()
+{
+    return QCoreApplication::applicationVersion();
+}
+
+QString ApplicationInformations::getApplicationFullName()
+{
+    return getApplicationName().append(" ").append(getApplicationVersion());
 }

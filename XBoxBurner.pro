@@ -10,8 +10,12 @@ RCC_DIR      = build/rcc
 CODECFORTR   = UTF-8
 CODECFORSRC  = UTF-8
 
-SOURCES   += src/main.cpp src/xboxburner.cpp
-HEADERS   += src/xboxburner.h src/global.h
+SOURCES   += src/main.cpp src/xboxburner.cpp \
+    src/applicationinformations.cpp \
+    src/mainwindowinitializator.cpp
+HEADERS   += src/xboxburner.h src/global.h \
+    src/applicationinformations.h \
+    src/mainwindowinitializator.h
 FORMS     += resources/ui/xboxburner.ui
 RESOURCES += resources/xboxburner.qrc
 
