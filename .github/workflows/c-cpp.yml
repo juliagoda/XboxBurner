@@ -23,7 +23,7 @@ jobs:
       - name: Ubuntu XboxBurner
         uses: actions/checkout@v2
       - name: install dependencies
-        run: sudo apt install -y qtbase5-dev dvd+rw-tools
+        run: sudo apt install -y qtbase5-dev dvd+rw-tools --fix-missing
       - name: run qmake
         run: qmake .
       - name: make
