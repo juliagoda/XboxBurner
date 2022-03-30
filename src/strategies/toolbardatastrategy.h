@@ -26,7 +26,7 @@ class Settings;
 
 class ToolBarDataStrategy : public WidgetDataSaveStrategy {
 public:
-    ToolBarDataStrategy(QPointer<QToolBar> tool_bar);
+    ToolBarDataStrategy(QPointer<QToolBar> new_tool_bar);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 

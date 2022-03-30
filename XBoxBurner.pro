@@ -10,7 +10,7 @@ RCC_DIR      = build/rcc
 CODECFORTR   = UTF-8
 CODECFORSRC  = UTF-8
 
-QMAKE_CXXFLAGS += -std=c++20 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
+QMAKE_CXXFLAGS += -std=c++2a -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
 
 SOURCES   += src/main.cpp src/xboxburner.cpp \
     src/applicationinformations.cpp \

@@ -27,7 +27,7 @@ class Settings;
 
 class CheckBoxDataSaveStrategy : public WidgetDataSaveStrategy {
 public:
-    CheckBoxDataSaveStrategy(QPointer<QCheckBox> checkbox);
+    CheckBoxDataSaveStrategy(QPointer<QCheckBox> new_checkbox);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 

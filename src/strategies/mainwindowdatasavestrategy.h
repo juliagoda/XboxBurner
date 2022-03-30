@@ -28,7 +28,7 @@ class Settings;
 
 class MainWindowDataSaveStrategy : public WidgetDataSaveStrategy {
 public:
-    MainWindowDataSaveStrategy(QPointer<QMainWindow> main_window);
+    MainWindowDataSaveStrategy(QPointer<QMainWindow> new_main_window);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 

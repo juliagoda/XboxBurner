@@ -28,7 +28,7 @@ class Settings;
 
 class LineEditDataSaveStrategy : public WidgetDataSaveStrategy {
 public:
-    LineEditDataSaveStrategy(QPointer<QLineEdit> line_edit);
+    LineEditDataSaveStrategy(QPointer<QLineEdit> new_line_edit);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 

@@ -34,7 +34,7 @@ class MainWindowInitializator : public XBoxBurner {
     Q_OBJECT
 
 public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
+    explicit MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent = nullptr);
     void showMainWindow();
 
 private:

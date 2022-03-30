@@ -41,7 +41,7 @@ class XBoxBurner : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit XBoxBurner(const ApplicationInformations& applications_informations, QWidget* parent = 0);
+    explicit XBoxBurner(const ApplicationInformations& new_applications_informations, QWidget* parent = 0);
     ~XBoxBurner();
 
 protected:

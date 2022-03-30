@@ -20,8 +20,8 @@
 
 #include "settings.h"
 
-LineEditDataSaveStrategy::LineEditDataSaveStrategy(QPointer<QLineEdit> line_edit)
-    : line_edit { line_edit }
+LineEditDataSaveStrategy::LineEditDataSaveStrategy(QPointer<QLineEdit> new_line_edit)
+    : line_edit { new_line_edit }
 {
 }
 

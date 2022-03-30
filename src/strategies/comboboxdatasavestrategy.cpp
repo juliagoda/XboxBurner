@@ -20,8 +20,8 @@
 
 #include "settings.h"
 
-ComboBoxDataSaveStrategy::ComboBoxDataSaveStrategy(QPointer<QComboBox> combobox)
-    : combobox { combobox }
+ComboBoxDataSaveStrategy::ComboBoxDataSaveStrategy(QPointer<QComboBox> new_combobox)
+    : combobox { new_combobox }
 {
 }
 

@@ -20,8 +20,8 @@
 
 #include "settings.h"
 
-CheckBoxDataSaveStrategy::CheckBoxDataSaveStrategy(QPointer<QCheckBox> checkbox)
-    : checkbox { checkbox }
+CheckBoxDataSaveStrategy::CheckBoxDataSaveStrategy(QPointer<QCheckBox> new_checkbox)
+    : checkbox { new_checkbox }
 {
 }
 

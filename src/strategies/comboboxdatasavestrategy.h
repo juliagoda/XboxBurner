@@ -28,7 +28,7 @@ class Settings;
 
 class ComboBoxDataSaveStrategy : public WidgetDataSaveStrategy {
 public:
-    ComboBoxDataSaveStrategy(QPointer<QComboBox> combobox);
+    ComboBoxDataSaveStrategy(QPointer<QComboBox> new_combobox);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 

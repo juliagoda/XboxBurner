@@ -30,10 +30,10 @@
 #include <QFuture>
 #include <QSharedDataPointer>
 
-MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent)
-    : XBoxBurner { applications_informations, parent }
+MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent)
+    : XBoxBurner { new_applications_informations, parent }
 {
-    settings = new Settings(createListOfSaveLoadStrategies(), applications_informations);
+    settings = new Settings(createListOfSaveLoadStrategies(), new_applications_informations);
     checkTools();
     initializeSettingsLoad();
     preparePathCompleters();

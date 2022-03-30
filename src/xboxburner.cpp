@@ -35,10 +35,10 @@
 #include <QtConcurrent>
 #include <QtGlobal>
 
-XBoxBurner::XBoxBurner(const ApplicationInformations& applications_informations, QWidget* parent)
+XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informations, QWidget* parent)
     : QMainWindow(parent)
     , ui { new Ui::XBoxBurner }
-    , applications_informations { applications_informations }
+    , applications_informations { new_applications_informations }
     , imageMd5sum { QString("") }
     , dvdMd5sum({ QString("") })
     , md5ProgressMax { 0 }
@@ -254,10 +254,10 @@ void XBoxBurner::on_comboBox_dvdFormat_currentIndexChanged(int index)
 
 void XBoxBurner::getMediaInfo_readyReadStandardOutput()
 {
-    QString data = checkMediaProcess->readAllStandardOutput().data();
+    QString media_process_data = checkMediaProcess->readAllStandardOutput().data();
 
-    ui->plain_text_edit_with_logs->appendPlainText(data);
-    mediaInfo.append(data.split("\n"));
+    ui->plain_text_edit_with_logs->appendPlainText(media_process_data);
+    mediaInfo.append(media_process_data.split("\n"));
 }
 
 void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus)

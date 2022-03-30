@@ -20,8 +20,8 @@
 
 #include "settings.h"
 
-ToolBarDataStrategy::ToolBarDataStrategy(QPointer<QToolBar> tool_bar)
-    : tool_bar { tool_bar }
+ToolBarDataStrategy::ToolBarDataStrategy(QPointer<QToolBar> new_tool_bar)
+    : tool_bar { new_tool_bar }
 {
 }
 

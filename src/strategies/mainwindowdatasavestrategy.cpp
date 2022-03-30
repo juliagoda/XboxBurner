@@ -20,8 +20,8 @@
 
 #include "settings.h"
 
-MainWindowDataSaveStrategy::MainWindowDataSaveStrategy(QPointer<QMainWindow> main_window)
-    : main_window { main_window }
+MainWindowDataSaveStrategy::MainWindowDataSaveStrategy(QPointer<QMainWindow> new_main_window)
+    : main_window { new_main_window }
 {
 }
 
