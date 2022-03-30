@@ -16,34 +16,21 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "lineeditdatasavestrategy.h"
 
-#include "xboxburner.h"
+#include "settings.h"
 
-#include "applicationinformations.h"
-#include "strategies/widgetdatasavestrategy.h"
+LineEditDataSaveStrategy::LineEditDataSaveStrategy(QPointer<QLineEdit> line_edit)
+    : line_edit { line_edit }
+{
+}
 
-#include <QLineEdit>
-#include <QPointer>
-#include <QStringList>
-#include <QWidget>
+void LineEditDataSaveStrategy::loadData(QPointer<Settings> settings)
+{
+    line_edit->setText(settings.data()->value(line_edit->accessibleName(), QVariant("")).toString());
+}
 
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
-public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-};
+void LineEditDataSaveStrategy::saveData(QPointer<Settings> settings)
+{
+    settings.data()->setValue(line_edit->accessibleName(), line_edit->text());
+}

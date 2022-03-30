@@ -10,12 +10,33 @@ RCC_DIR      = build/rcc
 CODECFORTR   = UTF-8
 CODECFORSRC  = UTF-8
 
+QMAKE_CXXFLAGS += -std=c++20 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
+
 SOURCES   += src/main.cpp src/xboxburner.cpp \
     src/applicationinformations.cpp \
-    src/mainwindowinitializator.cpp
-HEADERS   += src/xboxburner.h src/global.h \
+    src/strategies/checkboxdatasavestrategy.cpp \
+    src/strategies/comboboxdatasavestrategy.cpp \
+    src/fileextensions.cpp \
+    src/strategies/lineeditdatasavestrategy.cpp \
+    src/listsettingswidget.cpp \
+    src/strategies/mainwindowdatasavestrategy.cpp \
+    src/mainwindowinitializator.cpp \
+    src/settings.cpp \
+    src/strategies/toolbardatastrategy.cpp
+
+HEADERS   += src/xboxburner.h \
     src/applicationinformations.h \
-    src/mainwindowinitializator.h
+    src/strategies/checkboxdatasavestrategy.h \
+    src/strategies/comboboxdatasavestrategy.h \
+    src/fileextensions.h \
+    src/strategies/lineeditdatasavestrategy.h \
+    src/listsettingswidget.h \
+    src/strategies/mainwindowdatasavestrategy.h \
+    src/mainwindowinitializator.h \
+    src/settings.h \
+    src/strategies/toolbardatastrategy.h \
+    src/strategies/widgetdatasavestrategy.h
+
 FORMS     += resources/ui/xboxburner.ui
 RESOURCES += resources/xboxburner.qrc
 

@@ -30,8 +30,8 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    MainWindowInitializator main_window_initializator;
-    ApplicationInformations applications_informations;
+    const ApplicationInformations applications_informations {};
+    MainWindowInitializator main_window_initializator { applications_informations };
     main_window_initializator.setWindowTitle(applications_informations.getApplicationFullName());
     main_window_initializator.showMainWindow();
 

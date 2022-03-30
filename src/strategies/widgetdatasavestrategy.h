@@ -18,32 +18,13 @@
 
 #pragma once
 
-#include "xboxburner.h"
-
-#include "applicationinformations.h"
-#include "strategies/widgetdatasavestrategy.h"
-
-#include <QLineEdit>
 #include <QPointer>
-#include <QStringList>
-#include <QWidget>
 
-class ListSettingsWidget;
+class Settings;
 
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
+class WidgetDataSaveStrategy {
 public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
+    virtual ~WidgetDataSaveStrategy() = default;
+    virtual void loadData(QPointer<Settings> settings) = 0;
+    virtual void saveData(QPointer<Settings> settings) = 0;
 };

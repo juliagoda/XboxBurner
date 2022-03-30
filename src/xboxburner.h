@@ -24,7 +24,8 @@
 #include <QMainWindow>
 #include <QtGui>
 
-#include "global.h"
+#include "applicationinformations.h"
+#include "settings.h"
 
 #ifdef Q_OS_WIN
 #include <stdio.h>
@@ -39,45 +40,21 @@ class XBoxBurner;
 class XBoxBurner : public QMainWindow {
     Q_OBJECT
 
-    QString dvdrwmediainfo, growisofs, imageMd5sum, dvdMd5sum;
-    QProcess *checkMediaProcess, *burnProcess;
-
-    QStringList mediaInfo;
-    qint64 md5ProgressMax;
-    bool burning, verifying, cancel;
-    int blockSize;
-
-    void saveSettings();
-
-    void startBurnProcess();
-
-    QString layerBreak();
-    void truncateImage();
-    bool createBackup();
-    void resizeImage();
-    void verify();
-    QString calculatingImageMD5();
-    QString calculatingDvdMD5();
-
-    void startBusy(const bool main = false);
-    void stopBusy(const bool main = false);
-
-    QString growisofsVersion();
-
 public:
-    explicit XBoxBurner(QWidget* parent = 0);
+    explicit XBoxBurner(const ApplicationInformations& applications_informations, QWidget* parent = 0);
     ~XBoxBurner();
 
 protected:
     QMenu* createPopupMenu();
     void keyReleaseEvent(QKeyEvent* keyEvent);
     bool event(QEvent* event);
-    void loadSettings();
+
     void checkTools();
     void showStatusBarMessage(const QString& text);
     Ui::XBoxBurner* ui;
     QFutureWatcher<bool> backup_future_watcher;
     QFutureWatcher<QString> image_future_watcher, dvd_future_watcher;
+    QPointer<Settings> settings;
 
 protected slots:
     void burn_triggered();
@@ -112,6 +89,28 @@ protected slots:
     void toolBar_toolButtonTextOnly();
     void toolBar_toolButtonTextBesideIcon();
     void toolBar_toolButtonTextUnderIcon();
+
+private:
+    void initializeSettingsSave();
+    void startBurnProcess();
+    QString layerBreak();
+    void truncateImage();
+    bool createBackup();
+    void resizeImage();
+    void verify();
+    QString calculatingImageMD5();
+    QString calculatingDvdMD5();
+    void startBusy(const bool main = false);
+    void stopBusy(const bool main = false);
+    QString growisofsVersion();
+
+    const ApplicationInformations applications_informations;
+    QString dvdrwmediainfo, growisofs, imageMd5sum, dvdMd5sum;
+    QProcess *checkMediaProcess, *burnProcess;
+    QStringList mediaInfo;
+    qint64 md5ProgressMax;
+    bool burning, verifying, cancel;
+    int blockSize;
 
 signals:
     void md5SumMaximum(qint64);

@@ -20,8 +20,7 @@
 
 #include <QCoreApplication>
 
-ApplicationInformations::ApplicationInformations(QObject* parent)
-    : QObject { parent }
+ApplicationInformations::ApplicationInformations()
 {
     QCoreApplication::setOrganizationDomain("https://github.com/juliagoda/XboxBurner");
     QCoreApplication::setOrganizationName("juliagoda");
@@ -29,27 +28,36 @@ ApplicationInformations::ApplicationInformations(QObject* parent)
     QCoreApplication::setApplicationVersion("1.4");
 }
 
-QString ApplicationInformations::getApplicationName()
+const QString ApplicationInformations::getApplicationName() const
 {
     return QCoreApplication::applicationName();
 }
 
-QString ApplicationInformations::getOrganizationDomain()
+const QString ApplicationInformations::getOrganizationDomain() const
 {
     return QCoreApplication::organizationDomain();
 }
 
-QString ApplicationInformations::getOrganizationName()
+const QString ApplicationInformations::getOrganizationName() const
 {
     return QCoreApplication::organizationName();
 }
 
-QString ApplicationInformations::getApplicationVersion()
+const QString ApplicationInformations::getApplicationVersion() const
 {
     return QCoreApplication::applicationVersion();
 }
 
-QString ApplicationInformations::getApplicationFullName()
+const QString ApplicationInformations::getApplicationFullName() const
 {
-    return getApplicationName().append(" ").append(getApplicationVersion());
+    return QCoreApplication::applicationName().append(" ").append(QCoreApplication::applicationVersion());
+}
+
+QSettings::Format ApplicationInformations::getApplicationStorageFormat() const
+{
+#ifdef Q_OS_WIN
+    return QSettings::IniFormat;
+#else
+    return QSettings::NativeFormat;
+#endif
 }

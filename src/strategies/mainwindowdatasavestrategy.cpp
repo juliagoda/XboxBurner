@@ -16,34 +16,31 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "mainwindowdatasavestrategy.h"
 
-#include "xboxburner.h"
+#include "settings.h"
 
-#include "applicationinformations.h"
-#include "strategies/widgetdatasavestrategy.h"
+MainWindowDataSaveStrategy::MainWindowDataSaveStrategy(QPointer<QMainWindow> main_window)
+    : main_window { main_window }
+{
+}
 
-#include <QLineEdit>
-#include <QPointer>
-#include <QStringList>
-#include <QWidget>
+void MainWindowDataSaveStrategy::loadData(QPointer<Settings> settings)
+{
+    QRect rect;
+    rect.setX(settings.data()->value("MainWindow/x", QVariant(0)).toInt());
+    rect.setY(settings.data()->value("MainWindow/y", QVariant(0)).toInt());
+    rect.setWidth(settings.data()->value("MainWindow/width", QVariant(550)).toInt());
+    rect.setHeight(settings.data()->value("MainWindow/height", QVariant(400)).toInt());
 
-class ListSettingsWidget;
+    main_window.data()->setGeometry(rect);
+}
 
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
-public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-};
+void MainWindowDataSaveStrategy::saveData(QPointer<Settings> settings)
+{
+    const QRect& main_window_geometry = main_window.data()->geometry();
+    settings.data()->setValue("MainWindow/x", main_window_geometry.x());
+    settings.data()->setValue("MainWindow/y", main_window_geometry.y());
+    settings.data()->setValue("MainWindow/width", main_window_geometry.width());
+    settings.data()->setValue("MainWindow/height", main_window_geometry.height());
+}

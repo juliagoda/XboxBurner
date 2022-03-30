@@ -41,9 +41,12 @@
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="0" column="0">
-              <widget class="QLabel" name="label">
+              <widget class="QLabel" name="label_image_path">
                <property name="text">
                 <string>Image:</string>
+               </property>
+               <property name="buddy">
+                <cstring>lineedit_image_path</cstring>
                </property>
               </widget>
              </item>
@@ -53,10 +56,13 @@
                 <string>Set the Xbox or XBox360 game image here.
 You need to set the .iso file NOT the .dvd file! Layer break is set automatically!</string>
                </property>
+               <property name="accessibleName">
+                <string>ImagePath</string>
+               </property>
               </widget>
              </item>
              <item row="0" column="2">
-              <widget class="QPushButton" name="pushButton_openImagePath">
+              <widget class="QPushButton" name="push_button_open_image_path">
                <property name="toolTip">
                 <string>Open a Xbox or XBox360 game image.
 You need to open the .iso file NOT the .dvd file! Layer break is set automatically!</string>
@@ -77,17 +83,24 @@ You need to open the .iso file NOT the .dvd file! Layer break is set automatical
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="label_burner_path">
                <property name="text">
                 <string>Burner:</string>
+               </property>
+               <property name="buddy">
+                <cstring>lineedit_burner_path</cstring>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineedit_burner_path"/>
+              <widget class="QLineEdit" name="lineedit_burner_path">
+               <property name="accessibleName">
+                <string>BurnerPath</string>
+               </property>
+              </widget>
              </item>
              <item row="1" column="2">
-              <widget class="QPushButton" name="pushButton_check">
+              <widget class="QPushButton" name="push_button_check">
                <property name="toolTip">
                 <string>Checks DVDR infos and write speeds.</string>
                </property>
@@ -136,7 +149,7 @@ You need to open the .iso file NOT the .dvd file! Layer break is set automatical
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_writeSpeed">
+              <widget class="QComboBox" name="combo_box_write_speed">
                <property name="minimumSize">
                 <size>
                  <width>70</width>
@@ -179,7 +192,7 @@ You need to click &quot;Check&quot; for checking DVDR infos and write speeds!</s
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_dvdFormat">
+              <widget class="QComboBox" name="combo_box_dvd_format">
                <property name="toolTip">
                 <string>Sets the XBox game DVD format.
 
@@ -191,6 +204,9 @@ XGD3 (iXtreme Burner Max firmware): Double layer DVD for XBox360, with iXtreme B
 Special format (manual layer break): Enter manual layer break, this was not checked while burning!
 
 Must be set for burning! For all XGD formats layer break is set automatically!</string>
+               </property>
+               <property name="accessibleName">
+                <string>DVDFormat</string>
                </property>
                <property name="currentIndex">
                 <number>0</number>
@@ -307,10 +323,13 @@ Must be set for burning! For all XGD formats layer break is set automatically!</
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
-              <widget class="QCheckBox" name="checkBox_dao">
+              <widget class="QCheckBox" name="check_box_dao_mode">
                <property name="toolTip">
                 <string>All data is written sequentially to the disc in one uninterrupted recording session.
 This recording mode is deactivated in DVD format &quot;XGD3 (iXtreme Burner Max firmware)&quot;!</string>
+               </property>
+               <property name="accessibleName">
+                <string>DAOmode</string>
                </property>
                <property name="text">
                 <string>Disc-At-Once</string>
@@ -337,10 +356,13 @@ This recording mode is deactivated in DVD format &quot;XGD3 (iXtreme Burner Max 
               </spacer>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_dvdCompat">
+              <widget class="QCheckBox" name="check_box_dvd_compat">
                <property name="toolTip">
                 <string>Provide maximum media compatibility with DVD-ROM.
 This recording mode is deactivated in DVD format &quot;XGD3 (iXtreme Burner Max firmware)&quot;!</string>
+               </property>
+               <property name="accessibleName">
+                <string>DVDCompat</string>
                </property>
                <property name="text">
                 <string>DVD compat</string>
@@ -367,10 +389,13 @@ This recording mode is deactivated in DVD format &quot;XGD3 (iXtreme Burner Max 
               </spacer>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_truncateBackup">
+              <widget class="QCheckBox" name="check_box_backup_creation">
                <property name="toolTip">
                 <string>Creates a backup of original game image.
 This works with XGD3 truncate method only!</string>
+               </property>
+               <property name="accessibleName">
+                <string>DataBackupCreation</string>
                </property>
                <property name="text">
                 <string>Backup</string>
@@ -397,9 +422,12 @@ This works with XGD3 truncate method only!</string>
               </spacer>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_verify">
+              <widget class="QCheckBox" name="check_box_data_verification">
                <property name="toolTip">
                 <string>Data from image and DVD will be compared.</string>
+               </property>
+               <property name="accessibleName">
+                <string>VerificationDataAfterBurning</string>
                </property>
                <property name="text">
                 <string>Verify</string>
@@ -426,9 +454,12 @@ This works with XGD3 truncate method only!</string>
               </spacer>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_dryRun">
+              <widget class="QCheckBox" name="check_box_dry_run">
                <property name="toolTip">
                 <string>Performs all the steps till, but not including the first write operation.</string>
+               </property>
+               <property name="accessibleName">
+                <string>TestWithoutBurning</string>
                </property>
                <property name="text">
                 <string>Dry run</string>
@@ -466,7 +497,7 @@ This works with XGD3 truncate method only!</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QProgressBar" name="progressBar_burn">
+            <widget class="QProgressBar" name="progress_bar_burn">
              <property name="value">
               <number>0</number>
              </property>
@@ -475,7 +506,7 @@ This works with XGD3 truncate method only!</string>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QProgressBar" name="progressBar_rbu">
+              <widget class="QProgressBar" name="progress_bar_ring_buffer_unit">
                <property name="toolTip">
                 <string>Ring buffer</string>
                </property>
@@ -488,7 +519,7 @@ This works with XGD3 truncate method only!</string>
               </widget>
              </item>
              <item>
-              <widget class="QProgressBar" name="progressBar_ubu">
+              <widget class="QProgressBar" name="progress_bar_unit_buffer_unit">
                <property name="toolTip">
                 <string>Unit buffer</string>
                </property>
@@ -513,7 +544,7 @@ This works with XGD3 truncate method only!</string>
          <number>0</number>
         </property>
         <item>
-         <widget class="QPlainTextEdit" name="plainTextEdit_log"/>
+         <widget class="QPlainTextEdit" name="plain_text_edit_with_logs"/>
         </item>
         <item>
          <widget class="QFrame" name="frame_5">
@@ -531,7 +562,7 @@ This works with XGD3 truncate method only!</string>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="QPushButton" name="pushButton_copy">
+            <widget class="QPushButton" name="push_button_copy">
              <property name="text">
               <string>&amp;Copy</string>
              </property>
@@ -548,7 +579,7 @@ This works with XGD3 truncate method only!</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_save">
+            <widget class="QPushButton" name="push_button_save">
              <property name="text">
               <string>&amp;Save</string>
              </property>
@@ -565,7 +596,7 @@ This works with XGD3 truncate method only!</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_logReset">
+            <widget class="QPushButton" name="push_button_logs_reset">
              <property name="text">
               <string>&amp;Reset</string>
              </property>
@@ -604,17 +635,17 @@ This works with XGD3 truncate method only!</string>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionBurn"/>
-   <addaction name="actionLog"/>
+   <addaction name="action_burn"/>
+   <addaction name="action_logs"/>
    <addaction name="separator"/>
-   <addaction name="actionStartBurn"/>
-   <addaction name="actionVerify"/>
-   <addaction name="actionReset"/>
+   <addaction name="action_start_burn"/>
+   <addaction name="action_verification"/>
+   <addaction name="action_reset"/>
    <addaction name="separator"/>
-   <addaction name="actionAbout"/>
-   <addaction name="actionExit"/>
+   <addaction name="action_about"/>
+   <addaction name="action_exit"/>
   </widget>
-  <action name="actionBurn">
+  <action name="action_burn">
    <property name="icon">
     <iconset resource="../xboxburner.qrc">
      <normaloff>:/images/XBoxBurner.png</normaloff>:/images/XBoxBurner.png</iconset>
@@ -626,7 +657,7 @@ This works with XGD3 truncate method only!</string>
     <string>Switch to burn page (Ctrl+B)</string>
    </property>
   </action>
-  <action name="actionLog">
+  <action name="action_logs">
    <property name="icon">
     <iconset resource="../xboxburner.qrc">
      <normaloff>:/images/log.png</normaloff>:/images/log.png</iconset>
@@ -638,7 +669,7 @@ This works with XGD3 truncate method only!</string>
     <string>Switch to log page (Ctrl+L)</string>
    </property>
   </action>
-  <action name="actionStartBurn">
+  <action name="action_start_burn">
    <property name="icon">
     <iconset resource="../xboxburner.qrc">
      <normaloff>:/images/burn.png</normaloff>:/images/burn.png</iconset>
@@ -650,7 +681,7 @@ This works with XGD3 truncate method only!</string>
     <string>Starts burn process (Ctrl+S)</string>
    </property>
   </action>
-  <action name="actionVerify">
+  <action name="action_verification">
    <property name="icon">
     <iconset resource="../xboxburner.qrc">
      <normaloff>:/images/verify.png</normaloff>:/images/verify.png</iconset>
@@ -662,7 +693,7 @@ This works with XGD3 truncate method only!</string>
     <string>Verify burned disc (Ctrl+Y)</string>
    </property>
   </action>
-  <action name="actionReset">
+  <action name="action_reset">
    <property name="icon">
     <iconset resource="../xboxburner.qrc">
      <normaloff>:/images/reset.png</normaloff>:/images/reset.png</iconset>
@@ -674,7 +705,7 @@ This works with XGD3 truncate method only!</string>
     <string>Resets all (Ctrl+R)</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="action_about">
    <property name="icon">
     <iconset resource="../xboxburner.qrc">
      <normaloff>:/images/about.png</normaloff>:/images/about.png</iconset>
@@ -683,7 +714,7 @@ This works with XGD3 truncate method only!</string>
     <string>About</string>
    </property>
   </action>
-  <action name="actionExit">
+  <action name="action_exit">
    <property name="icon">
     <iconset resource="../xboxburner.qrc">
      <normaloff>:/images/exit.png</normaloff>:/images/exit.png</iconset>
@@ -699,27 +730,27 @@ This works with XGD3 truncate method only!</string>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>lineedit_image_path</tabstop>
-  <tabstop>pushButton_openImagePath</tabstop>
+  <tabstop>push_button_open_image_path</tabstop>
   <tabstop>lineedit_burner_path</tabstop>
-  <tabstop>pushButton_check</tabstop>
-  <tabstop>comboBox_writeSpeed</tabstop>
-  <tabstop>comboBox_dvdFormat</tabstop>
-  <tabstop>checkBox_dao</tabstop>
-  <tabstop>checkBox_dvdCompat</tabstop>
-  <tabstop>checkBox_truncateBackup</tabstop>
-  <tabstop>checkBox_verify</tabstop>
-  <tabstop>checkBox_dryRun</tabstop>
-  <tabstop>pushButton_copy</tabstop>
-  <tabstop>pushButton_save</tabstop>
-  <tabstop>pushButton_logReset</tabstop>
-  <tabstop>plainTextEdit_log</tabstop>
+  <tabstop>push_button_check</tabstop>
+  <tabstop>combo_box_write_speed</tabstop>
+  <tabstop>combo_box_dvd_format</tabstop>
+  <tabstop>check_box_dao_mode</tabstop>
+  <tabstop>check_box_dvd_compat</tabstop>
+  <tabstop>check_box_backup_creation</tabstop>
+  <tabstop>check_box_data_verification</tabstop>
+  <tabstop>check_box_dry_run</tabstop>
+  <tabstop>push_button_copy</tabstop>
+  <tabstop>push_button_save</tabstop>
+  <tabstop>push_button_logs_reset</tabstop>
+  <tabstop>plain_text_edit_with_logs</tabstop>
  </tabstops>
  <resources>
   <include location="../xboxburner.qrc"/>
  </resources>
  <connections>
   <connection>
-   <sender>actionStartBurn</sender>
+   <sender>action_start_burn</sender>
    <signal>triggered()</signal>
    <receiver>XBoxBurner</receiver>
    <slot>startBurn_triggered()</slot>
@@ -735,7 +766,7 @@ This works with XGD3 truncate method only!</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionVerify</sender>
+   <sender>action_verification</sender>
    <signal>triggered()</signal>
    <receiver>XBoxBurner</receiver>
    <slot>verify_triggered()</slot>
@@ -751,7 +782,7 @@ This works with XGD3 truncate method only!</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionReset</sender>
+   <sender>action_reset</sender>
    <signal>triggered()</signal>
    <receiver>XBoxBurner</receiver>
    <slot>reset_triggered()</slot>
@@ -767,7 +798,7 @@ This works with XGD3 truncate method only!</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionAbout</sender>
+   <sender>action_about</sender>
    <signal>triggered()</signal>
    <receiver>XBoxBurner</receiver>
    <slot>about_triggered()</slot>
@@ -783,7 +814,7 @@ This works with XGD3 truncate method only!</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionExit</sender>
+   <sender>action_exit</sender>
    <signal>triggered()</signal>
    <receiver>XBoxBurner</receiver>
    <slot>exit_triggered()</slot>
@@ -799,7 +830,7 @@ This works with XGD3 truncate method only!</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionBurn</sender>
+   <sender>action_burn</sender>
    <signal>triggered()</signal>
    <receiver>XBoxBurner</receiver>
    <slot>burn_triggered()</slot>
@@ -815,7 +846,7 @@ This works with XGD3 truncate method only!</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionLog</sender>
+   <sender>action_logs</sender>
    <signal>triggered()</signal>
    <receiver>XBoxBurner</receiver>
    <slot>log_triggered()</slot>

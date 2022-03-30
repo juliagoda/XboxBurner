@@ -18,32 +18,25 @@
 
 #pragma once
 
-#include "xboxburner.h"
-
-#include "applicationinformations.h"
-#include "strategies/widgetdatasavestrategy.h"
-
+#include <QCheckBox>
+#include <QComboBox>
 #include <QLineEdit>
-#include <QPointer>
-#include <QStringList>
-#include <QWidget>
+#include <QList>
+#include <QMainWindow>
+#include <QToolBar>
 
-class ListSettingsWidget;
+class WidgetDataSaveStrategy;
 
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
+class ListSettingsWidget {
 public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
+    ListSettingsWidget();
+    void addSettingStrategyCheckBox(QCheckBox* checkbox);
+    void addSettingStrategyLineEdit(QLineEdit* line_edit);
+    void addSettingStrategyToolBar(QToolBar* tool_bar);
+    void addSettingStrategyComboBox(QComboBox* combo_box);
+    void addSettingStrategyMainWindow(QMainWindow* main_window);
+    const QSharedPointer<QList<QSharedPointer<WidgetDataSaveStrategy>>> getListWidgetStrategies(); // QList cannot be inherited, so it's here wrapped
 
 private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
+    const QSharedPointer<QList<QSharedPointer<WidgetDataSaveStrategy>>> list_widget_strategies;
 };

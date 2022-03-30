@@ -1,3 +1,4 @@
+#pragma once
 /***************************************************************************
  *   Copyright (C) 2022 Jagoda "juliagoda" Górska                          *
  *   juliagoda.pl@protonmail.com                                           *
@@ -16,34 +17,26 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
-
-#include "xboxburner.h"
-
-#include "applicationinformations.h"
 #include "strategies/widgetdatasavestrategy.h"
 
-#include <QLineEdit>
+#include "applicationinformations.h"
+
+#include <QList>
+#include <QObject>
 #include <QPointer>
-#include <QStringList>
-#include <QWidget>
+#include <QSettings>
+#include <QSharedPointer>
 
 class ListSettingsWidget;
 
-class MainWindowInitializator : public XBoxBurner {
+class Settings : public QSettings {
     Q_OBJECT
 
 public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
+    explicit Settings(const QSharedPointer<ListSettingsWidget> new_widgets_list, const ApplicationInformations& applications_informations, QObject* parent = nullptr);
+    void loadSettings();
+    void saveSettings();
 
 private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
+    const QSharedPointer<ListSettingsWidget> widgets_list;
 };

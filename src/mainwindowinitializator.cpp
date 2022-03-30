@@ -17,21 +17,33 @@
  ***************************************************************************/
 
 #include "mainwindowinitializator.h"
+
+#include "applicationinformations.h"
+#include "fileextensions.h"
+#include "listsettingswidget.h"
+#include "strategies/widgetdatasavestrategy.h"
 #include "ui_xboxburner.h"
 
 #include <QCompleter>
 #include <QFileSystemModel>
 #include <QFont>
 #include <QFuture>
+#include <QSharedDataPointer>
 
-MainWindowInitializator::MainWindowInitializator(QWidget* parent)
-    : XBoxBurner { parent }
+MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent)
+    : XBoxBurner { applications_informations, parent }
 {
+    settings = new Settings(createListOfSaveLoadStrategies(), applications_informations);
     checkTools();
-    loadSettings();
+    initializeSettingsLoad();
     preparePathCompleters();
     showStatusBarMessage(tr("Ready."));
     prepareFontStyleForInformationLabel();
+}
+
+void MainWindowInitializator::initializeSettingsLoad()
+{
+    settings->loadSettings();
 }
 
 void MainWindowInitializator::initializeConnections()
@@ -53,9 +65,9 @@ void MainWindowInitializator::prepareFontStyleForInformationLabel()
 
 void MainWindowInitializator::preparePathCompleters()
 {
-    const QStringList file_extensions = QStringList() << "*.iso"
-                                                      << "*.img"
-                                                      << "*.cdr";
+    const QStringList file_extensions = QStringList() << FileExtensions::getISOName()
+                                                      << FileExtensions::getIMGName()
+                                                      << FileExtensions::getCDRName();
     const QStringList name_filters_for_cd_format { file_extensions };
     QPointer<QLineEdit> image_path_place { ui->lineedit_image_path };
     preparePathCompleter(image_path_place, name_filters_for_cd_format);
@@ -78,11 +90,30 @@ void MainWindowInitializator::preparePathCompleter(QPointer<QLineEdit> const com
 
 void MainWindowInitializator::showMainWindow()
 {
-    if (!mainWindowShowed())
+    if (!mainWindowShowed()) {
         show();
+    }
 }
 
 bool MainWindowInitializator::mainWindowShowed()
 {
     return isVisible();
+}
+
+const QSharedPointer<ListSettingsWidget> MainWindowInitializator::createListOfSaveLoadStrategies()
+{
+    QSharedPointer<ListSettingsWidget> save_load_strategies { new ListSettingsWidget };
+    save_load_strategies->addSettingStrategyCheckBox(ui->check_box_dao_mode);
+    save_load_strategies->addSettingStrategyCheckBox(ui->check_box_dry_run);
+    save_load_strategies->addSettingStrategyCheckBox(ui->check_box_dvd_compat);
+    save_load_strategies->addSettingStrategyCheckBox(ui->check_box_backup_creation);
+    save_load_strategies->addSettingStrategyCheckBox(ui->check_box_data_verification);
+    save_load_strategies->addSettingStrategyLineEdit(ui->lineedit_burner_path);
+    save_load_strategies->addSettingStrategyLineEdit(ui->lineedit_image_path);
+    save_load_strategies->addSettingStrategyComboBox(ui->combo_box_dvd_format);
+    save_load_strategies->addSettingStrategyToolBar(ui->toolBar);
+    save_load_strategies->addSettingStrategyComboBox(ui->combo_box_dvd_format);
+    save_load_strategies->addSettingStrategyMainWindow(this);
+
+    return save_load_strategies;
 }

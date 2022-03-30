@@ -16,34 +16,19 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "fileextensions.h"
 
-#include "xboxburner.h"
+const QString FileExtensions::getCDRName()
+{
+    return QString("*.cdr");
+}
 
-#include "applicationinformations.h"
-#include "strategies/widgetdatasavestrategy.h"
+const QString FileExtensions::getISOName()
+{
+    return QString("*.iso");
+}
 
-#include <QLineEdit>
-#include <QPointer>
-#include <QStringList>
-#include <QWidget>
-
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
-public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-};
+const QString FileExtensions::getIMGName()
+{
+    return QString("*.img");
+}

@@ -16,34 +16,22 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "toolbardatastrategy.h"
 
-#include "xboxburner.h"
+#include "settings.h"
 
-#include "applicationinformations.h"
-#include "strategies/widgetdatasavestrategy.h"
+ToolBarDataStrategy::ToolBarDataStrategy(QPointer<QToolBar> tool_bar)
+    : tool_bar { tool_bar }
+{
+}
 
-#include <QLineEdit>
-#include <QPointer>
-#include <QStringList>
-#include <QWidget>
+void ToolBarDataStrategy::loadData(QPointer<Settings> settings)
+{
+    QVariant tool_button_style_variant = settings.data()->value("MainWindow/ToolButtonStyle", 2);
+    tool_bar.data()->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(tool_button_style_variant.toInt()));
+}
 
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
-public:
-    explicit MainWindowInitializator(const ApplicationInformations& applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-};
+void ToolBarDataStrategy::saveData(QPointer<Settings> settings)
+{
+    settings.data()->setValue("MainWindow/ToolButtonStyle", tool_bar->toolButtonStyle());
+}
