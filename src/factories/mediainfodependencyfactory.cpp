@@ -16,38 +16,30 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "mediainfodependencyfactory.h"
 
-#include "xboxburner.h"
+MediaInfoDependencyFactory::MediaInfoDependencyFactory()
+    : tool_name { "dvd+rw-mediainfo" }
+    , file { new QFile(getFileFullName("dvd+rw-mediainfo")) }
+    , version { getVersion(file.fileName()) }
+{
+}
 
-#include "applicationinformations.h"
-#include "factories/dvdrwtoolsdependencyfactory.h"
-#include "strategies/widgetdatasavestrategy.h"
+QStringList& MediaInfoDependencyFactory::showToolDetectionInformations()
+{
+    if (toolExistsInSystem()) {
+        return QStringList() << QObject::tr("Info: dvd+rw-mediainfo found in %1").arg(file.data()->fileName().mid(0, file.data()->fileName().lastIndexOf("/"))) << getToolVersion();
+    }
 
-#include <QLineEdit>
-#include <QPointer>
-#include <QSharedPointer>
-#include <QStringList>
-#include <QWidget>
+    return QStringList() << QObject::tr("Error: dvd+rw-mediainfo not found!");
+}
 
-class ListSettingsWidget;
+bool MediaInfoDependencyFactory::toolExistsInSystem()
+{
+    return file.exists();
+}
 
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
-public:
-    explicit MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    void fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list, const ApplicationInformations& new_applications_informations);
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-    const QList<QSharedPointer<DvdrwtoolsDependencyFactory>> createListOfExternalDependencies();
-};
+const QString MediaInfoDependencyFactory::getToolVersion() const
+{
+    return version;
+}

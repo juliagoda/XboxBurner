@@ -48,8 +48,6 @@ protected:
     QMenu* createPopupMenu();
     void keyReleaseEvent(QKeyEvent* keyEvent);
     bool event(QEvent* event);
-
-    void checkTools();
     void showStatusBarMessage(const QString& text);
     Ui::XBoxBurner* ui;
     QFutureWatcher<bool> backup_future_watcher;
@@ -60,17 +58,17 @@ protected slots:
     void burn_triggered();
     void log_triggered();
 
-    void on_pushButton_openImagePath_clicked();
-    void on_pushButton_check_clicked();
-    void on_comboBox_dvdFormat_currentIndexChanged(int index);
+    void on_push_button_open_image_path_clicked();
+    void on_push_button_check_clicked();
+    void on_combo_box_dvd_format_currentIndexChanged(int index);
     void startBurn_triggered();
     void verify_triggered();
     void reset_triggered();
     void about_triggered();
     void exit_triggered();
-    void on_pushButton_copy_clicked();
-    void on_pushButton_save_clicked();
-    void on_pushButton_logReset_clicked();
+    void on_push_button_copy_clicked();
+    void on_push_button_save_clicked();
+    void on_push_button_logs_reset_clicked();
 
     void getMediaInfo_readyReadStandardOutput();
     void getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus);
@@ -102,10 +100,9 @@ private:
     QString calculatingDvdMD5();
     void startBusy(const bool main = false);
     void stopBusy(const bool main = false);
-    QString growisofsVersion();
 
     const ApplicationInformations applications_informations;
-    QString dvdrwmediainfo, growisofs, imageMd5sum, dvdMd5sum;
+    QString dvdrwmediainfo, imageMd5sum, dvdMd5sum;
     QProcess *checkMediaProcess, *burnProcess;
     QStringList mediaInfo;
     qint64 md5ProgressMax;

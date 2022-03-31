@@ -18,36 +18,14 @@
 
 #pragma once
 
-#include "xboxburner.h"
-
-#include "applicationinformations.h"
-#include "factories/dvdrwtoolsdependencyfactory.h"
-#include "strategies/widgetdatasavestrategy.h"
-
-#include <QLineEdit>
-#include <QPointer>
-#include <QSharedPointer>
 #include <QStringList>
-#include <QWidget>
 
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
+class ExternalDependencyFactory {
 public:
-    explicit MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    void fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list, const ApplicationInformations& new_applications_informations);
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-    const QList<QSharedPointer<DvdrwtoolsDependencyFactory>> createListOfExternalDependencies();
+    virtual ~ExternalDependencyFactory() = default;
+    virtual const QString getFileFullName(const QString& tool_name) = 0;
+    virtual const QString& getApplicationName() = 0;
+    virtual void setSearchPaths() = 0;
+    virtual const QString getExecutableExtension();
+    virtual const QString getVersion(const QString& file_name);
 };

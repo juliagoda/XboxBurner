@@ -16,38 +16,8 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "dvdrwtoolsdetector.h"
 
-#include "xboxburner.h"
-
-#include "applicationinformations.h"
-#include "factories/dvdrwtoolsdependencyfactory.h"
-#include "strategies/widgetdatasavestrategy.h"
-
-#include <QLineEdit>
-#include <QPointer>
-#include <QSharedPointer>
-#include <QStringList>
-#include <QWidget>
-
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
-public:
-    explicit MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    void fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list, const ApplicationInformations& new_applications_informations);
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-    const QList<QSharedPointer<DvdrwtoolsDependencyFactory>> createListOfExternalDependencies();
-};
+DvdrwtoolsDetector::DvdrwtoolsDetector()
+{
+}

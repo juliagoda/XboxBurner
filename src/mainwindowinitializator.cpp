@@ -19,6 +19,7 @@
 #include "mainwindowinitializator.h"
 
 #include "applicationinformations.h"
+#include "factories/dvdrwtoolstooldependencyfactory.h"
 #include "fileextensions.h"
 #include "listsettingswidget.h"
 #include "strategies/widgetdatasavestrategy.h"
@@ -28,13 +29,13 @@
 #include <QFileSystemModel>
 #include <QFont>
 #include <QFuture>
-#include <QSharedDataPointer>
+#include <QList>
 
 MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent)
     : XBoxBurner { new_applications_informations, parent }
 {
     settings = new Settings(createListOfSaveLoadStrategies(), new_applications_informations);
-    checkTools();
+    fillPlainTextWithLogs(createListOfExternalDependencies(), new_applications_informations);
     initializeSettingsLoad();
     preparePathCompleters();
     showStatusBarMessage(tr("Ready."));
@@ -100,6 +101,19 @@ bool MainWindowInitializator::mainWindowShowed()
     return isVisible();
 }
 
+void MainWindowInitializator::fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list, const ApplicationInformations& new_applications_informations)
+{
+    ui->plain_text_edit_with_logs->appendPlainText(tr("(%1) XBoxBurner %2 started.").arg(QDateTime::currentDateTime().toString(), new_applications_informations.getApplicationVersion()));
+
+    QListIterator<QSharedPointer<DvdrwtoolsDependencyFactory>> external_dependencies_list_iterator(external_dependencies_list);
+
+    while (external_dependencies_list_iterator.hasNext()) {
+
+        auto external_dependency = external_dependencies_list_iterator.next();
+        ui->plain_text_edit_with_logs->appendPlainText(external_dependency.data()->showToolDetectionInformations().join("\n"));
+    }
+}
+
 const QSharedPointer<ListSettingsWidget> MainWindowInitializator::createListOfSaveLoadStrategies()
 {
     QSharedPointer<ListSettingsWidget> save_load_strategies { new ListSettingsWidget };
@@ -116,4 +130,15 @@ const QSharedPointer<ListSettingsWidget> MainWindowInitializator::createListOfSa
     save_load_strategies->addSettingStrategyMainWindow(this);
 
     return save_load_strategies;
+}
+
+const QList<QSharedPointer<DvdrwtoolsDependencyFactory>> MainWindowInitializator::createListOfExternalDependencies()
+{
+    QList<QSharedPointer<DvdrwtoolsDependencyFactory>> external_dependencies_list;
+    QSharedPointer<DvdrwtoolsDependencyFactory> growisofs { new DvdrwtoolsToolDependencyFactory("growisofs") };
+    external_dependencies_list.append(growisofs);
+    QSharedPointer<DvdrwtoolsDependencyFactory> media_info { new DvdrwtoolsToolDependencyFactory("dvd+rw-mediainfo") };
+    external_dependencies_list.append(media_info);
+
+    return external_dependencies_list;
 }

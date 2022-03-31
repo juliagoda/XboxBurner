@@ -14,6 +14,9 @@ QMAKE_CXXFLAGS += -std=c++2a -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
 
 SOURCES   += src/main.cpp src/xboxburner.cpp \
     src/applicationinformations.cpp \
+    src/factories/dvdrwtoolsdependencyfactory.cpp \
+    src/factories/dvdrwtoolstooldependencyfactory.cpp \
+    src/factories/externaldependencyfactory.cpp \
     src/strategies/checkboxdatasavestrategy.cpp \
     src/strategies/comboboxdatasavestrategy.cpp \
     src/fileextensions.cpp \
@@ -26,6 +29,9 @@ SOURCES   += src/main.cpp src/xboxburner.cpp \
 
 HEADERS   += src/xboxburner.h \
     src/applicationinformations.h \
+    src/factories/dvdrwtoolsdependencyfactory.h \
+    src/factories/dvdrwtoolstooldependencyfactory.h \
+    src/factories/externaldependencyfactory.h \
     src/strategies/checkboxdatasavestrategy.h \
     src/strategies/comboboxdatasavestrategy.h \
     src/fileextensions.h \

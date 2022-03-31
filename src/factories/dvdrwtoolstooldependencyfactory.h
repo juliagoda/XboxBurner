@@ -18,36 +18,22 @@
 
 #pragma once
 
-#include "xboxburner.h"
+#include "dvdrwtoolsdependencyfactory.h"
 
-#include "applicationinformations.h"
-#include "factories/dvdrwtoolsdependencyfactory.h"
-#include "strategies/widgetdatasavestrategy.h"
-
-#include <QLineEdit>
-#include <QPointer>
+#include <QFile>
 #include <QSharedPointer>
-#include <QStringList>
-#include <QWidget>
+#include <QString>
 
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner {
-    Q_OBJECT
-
+class DvdrwtoolsToolDependencyFactory : public DvdrwtoolsDependencyFactory {
 public:
-    explicit MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent = nullptr);
-    void showMainWindow();
+    DvdrwtoolsToolDependencyFactory(const QString& new_tool_name);
+    const QStringList showToolDetectionInformations() override;
+    bool toolExistsInSystem() override;
+    const QString& getToolVersion() override;
+    const QString getFileNamePath() override;
 
 private:
-    void initializeSettingsLoad();
-    void initializeConnections();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-        const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    bool mainWindowShowed();
-    void fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list, const ApplicationInformations& new_applications_informations);
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-    const QList<QSharedPointer<DvdrwtoolsDependencyFactory>> createListOfExternalDependencies();
+    const QString tool_name;
+    QSharedPointer<QFile> file;
+    const QString version;
 };

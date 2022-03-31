@@ -24,6 +24,10 @@
 #include "xboxburner.h"
 #include "ui_xboxburner.h"
 
+#include "factories/dvdrwtoolstooldependencyfactory.h"
+
+#include <QScopedPointer>
+
 #include <QAction>
 #include <QCompleter>
 #include <QFileDialog>
@@ -65,7 +69,7 @@ void XBoxBurner::log_triggered()
     ui->stackedWidget->setCurrentIndex(1);
 }
 
-void XBoxBurner::on_pushButton_openImagePath_clicked()
+void XBoxBurner::on_push_button_open_image_path_clicked()
 {
     QString path = QDir::homePath();
 
@@ -84,7 +88,7 @@ void XBoxBurner::on_pushButton_openImagePath_clicked()
     }
 }
 
-void XBoxBurner::on_pushButton_check_clicked()
+void XBoxBurner::on_push_button_check_clicked()
 {
     if (!ui->lineedit_burner_path->text().isEmpty()) {
         showStatusBarMessage(tr("Reading burner and media info..."));
@@ -191,13 +195,13 @@ void XBoxBurner::exit_triggered()
     qApp->quit();
 }
 
-void XBoxBurner::on_pushButton_copy_clicked()
+void XBoxBurner::on_push_button_copy_clicked()
 {
     QClipboard* clipboard = QApplication::clipboard();
     clipboard->setText(ui->plain_text_edit_with_logs->toPlainText());
 }
 
-void XBoxBurner::on_pushButton_save_clicked()
+void XBoxBurner::on_push_button_save_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save log file"), QDir::homePath().append("/XBoxBurner.log"), tr("XBoxBurner log file (*.log)"));
 
@@ -213,12 +217,12 @@ void XBoxBurner::on_pushButton_save_clicked()
     }
 }
 
-void XBoxBurner::on_pushButton_logReset_clicked()
+void XBoxBurner::on_push_button_logs_reset_clicked()
 {
     ui->plain_text_edit_with_logs->clear();
 }
 
-void XBoxBurner::on_comboBox_dvdFormat_currentIndexChanged(int index)
+void XBoxBurner::on_combo_box_dvd_format_currentIndexChanged(int index)
 {
     QString name;
 
@@ -346,7 +350,8 @@ void XBoxBurner::startBurnProcess()
     arguments.append(ui->lineedit_burner_path->text().simplified() + "=" + ui->lineedit_image_path->text().simplified());
 
     burnProcess->setProcessChannelMode(QProcess::MergedChannels);
-    burnProcess->start(growisofs, arguments);
+    QScopedPointer<DvdrwtoolsToolDependencyFactory> growisofs { new DvdrwtoolsToolDependencyFactory("growisofs") };
+    burnProcess->start(growisofs.data()->getFileNamePath(), arguments);
 }
 
 QString XBoxBurner::layerBreak()
@@ -754,52 +759,6 @@ void XBoxBurner::stopBusy(const bool main)
 void XBoxBurner::showStatusBarMessage(const QString& text)
 {
     ui->statusBar->showMessage(text, 0);
-}
-
-void XBoxBurner::checkTools()
-{
-    ui->plain_text_edit_with_logs->appendPlainText(tr("(%1) XBoxBurner %2 started.").arg(QDateTime::currentDateTime().toString(), QCoreApplication::applicationVersion()));
-
-#ifdef Q_OS_WIN
-    QString dvdrwtools_dvdrwmediainfo = "dvdrwtools:dvd+rw-mediainfo.exe";
-    QString dvdrwtools_growisofs = "dvdrwtools:growisofs.exe";
-#else
-    QString dvdrwtools_dvdrwmediainfo = "dvdrwtools:dvd+rw-mediainfo";
-    QString dvdrwtools_growisofs = "dvdrwtools:growisofs";
-#endif
-
-    QDir::setSearchPaths("dvdrwtools", QStringList() << QDir::currentPath() << QDir::currentPath() + "/XBoxBurner.app/Contents/MacOS" << QString(getenv("PATH")).split(":"));
-    QFile dvdrwmediainfo_file(dvdrwtools_dvdrwmediainfo);
-    QFile growisofs_file(dvdrwtools_growisofs);
-
-    if (!dvdrwmediainfo_file.exists()) {
-        dvdrwmediainfo = "";
-        ui->plain_text_edit_with_logs->appendPlainText(tr("Error: dvd+rw-mediainfo not found!"));
-        showStatusBarMessage(tr("Error: dvd+rw-mediainfo not found!"));
-    } else {
-        dvdrwmediainfo = dvdrwmediainfo_file.fileName();
-        ui->plain_text_edit_with_logs->appendPlainText(tr("Info: dvd+rw-mediainfo found in %1").arg(dvdrwmediainfo.mid(0, dvdrwmediainfo.lastIndexOf("/"))));
-    }
-
-    if (!growisofs_file.exists()) {
-        growisofs = "";
-        ui->plain_text_edit_with_logs->appendPlainText(tr("Error: growisofs not found!"));
-        showStatusBarMessage(tr("Error: growisofs not found!"));
-    } else {
-        growisofs = growisofs_file.fileName();
-        ui->plain_text_edit_with_logs->appendPlainText(tr("Info: growisofs found in %1").arg(growisofs.mid(0, growisofs.lastIndexOf("/"))));
-        ui->plain_text_edit_with_logs->appendPlainText(growisofsVersion());
-    }
-}
-
-QString XBoxBurner::growisofsVersion()
-{
-    QProcess growisofsProcess;
-    growisofsProcess.start(growisofs, QStringList() << "-version");
-
-    growisofsProcess.waitForFinished(-1);
-
-    return QString(growisofsProcess.readAll());
 }
 
 QMenu* XBoxBurner::createPopupMenu()

@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2011 - 2012 Kai Heitkamp                                *
- *   dynup@ymail.com | dynup.de.vu                                         *
+ *   Copyright (C) 2022 Jagoda "juliagoda" Górska                          *
+ *   juliagoda.pl@protonmail.com                                           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,19 +16,27 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#include "dvdrwtoolsdependencyfactory.h"
 
-#include <QString>
-#include <QSettings>
+#include <QDir>
 
-const QString AppName("XBoxBurner");
-const QString AppOrg("dynup");
+DvdrwtoolsDependencyFactory::DvdrwtoolsDependencyFactory()
+    : app_name { "dvdrwtools" }
+{
+    setSearchPaths();
+}
 
-#ifdef Q_OS_WIN
-    static QSettings AppSettings(QSettings::IniFormat, QSettings::UserScope, AppOrg, AppName.toLower());
-#else
-    static QSettings AppSettings(QSettings::NativeFormat, QSettings::UserScope, AppOrg, AppName.toLower());
-#endif
+const QString DvdrwtoolsDependencyFactory::getFileFullName(const QString& tool_name)
+{
+    return getApplicationName() + ":" + tool_name + getExecutableExtension();
+}
 
-#endif // GLOBAL_H
+const QString& DvdrwtoolsDependencyFactory::getApplicationName()
+{
+    return app_name;
+}
+
+void DvdrwtoolsDependencyFactory::setSearchPaths()
+{
+    QDir::setSearchPaths("dvdrwtools", QStringList() << QDir::currentPath() << QDir::currentPath() + "/XBoxBurner.app/Contents/MacOS" << QString(getenv("PATH")).split(":"));
+}
