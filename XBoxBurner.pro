@@ -13,10 +13,13 @@ CODECFORSRC  = UTF-8
 QMAKE_CXXFLAGS += -std=c++2a -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
 
 SOURCES   += src/main.cpp src/xboxburner.cpp \
+    barmessages.cpp \
     src/applicationinformations.cpp \
     src/factories/dvdrwtoolsdependencyfactory.cpp \
     src/factories/dvdrwtoolstooldependencyfactory.cpp \
     src/factories/externaldependencyfactory.cpp \
+    src/messages/boxmessages.cpp \
+    src/messages/messages.cpp \
     src/strategies/checkboxdatasavestrategy.cpp \
     src/strategies/comboboxdatasavestrategy.cpp \
     src/fileextensions.cpp \
@@ -28,10 +31,13 @@ SOURCES   += src/main.cpp src/xboxburner.cpp \
     src/strategies/toolbardatastrategy.cpp
 
 HEADERS   += src/xboxburner.h \
+    barmessages.h \
     src/applicationinformations.h \
     src/factories/dvdrwtoolsdependencyfactory.h \
     src/factories/dvdrwtoolstooldependencyfactory.h \
     src/factories/externaldependencyfactory.h \
+    src/messages/boxmessages.h \
+    src/messages/messages.h \
     src/strategies/checkboxdatasavestrategy.h \
     src/strategies/comboboxdatasavestrategy.h \
     src/fileextensions.h \

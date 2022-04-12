@@ -25,6 +25,8 @@
 #include "ui_xboxburner.h"
 
 #include "factories/dvdrwtoolstooldependencyfactory.h"
+#include "messages/boxmessages.h"
+#include "messages/messages.h"
 
 #include <QScopedPointer>
 
@@ -91,7 +93,7 @@ void XBoxBurner::on_push_button_open_image_path_clicked()
 void XBoxBurner::on_push_button_check_clicked()
 {
     if (!ui->lineedit_burner_path->text().isEmpty()) {
-        showStatusBarMessage(tr("Reading burner and media info..."));
+        showStatusBarMessage(Messages::reading_info);
 
         checkMediaProcess = new QProcess();
 
@@ -108,13 +110,13 @@ void XBoxBurner::on_push_button_check_clicked()
 void XBoxBurner::startBurn_triggered()
 {
     if (burning) {
-        if (QMessageBox::question(this, tr("Cancel burn process"), tr("Are you sure that you want to cancel the burn process?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok) {
+        if (BoxMessages::cancelBurnProcessMessage(this) == QMessageBox::Ok) {
             burnProcess->kill();
         }
     } else {
         if (!ui->lineedit_image_path->text().isEmpty() && !ui->lineedit_burner_path->text().isEmpty() && !ui->combo_box_write_speed->currentText().isEmpty()) {
-            if (QMessageBox::question(this, tr("Start burn process"), tr("Are you sure that you want to burn the image?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok) {
-                ui->plain_text_edit_with_logs->appendPlainText("Burn process started at " + QLocale().dateFormat(QLocale::ShortFormat));
+            if (BoxMessages::startBurnProcessMessage(this) == QMessageBox::Ok) {
+                ui->plain_text_edit_with_logs->appendPlainText(Messages::burn_process_start_with_date);
 
                 ui->toolBar->actions().at(3)->setIcon(QIcon(":/images/cancel.png"));
                 ui->toolBar->actions().at(3)->setText(tr("&Cancel"));
@@ -147,7 +149,7 @@ void XBoxBurner::verify_triggered()
 
 void XBoxBurner::reset_triggered()
 {
-    if (QMessageBox::question(this, tr("Reset all"), tr("Are you sure to reset all?\n\nCaution:\nRunning burn process will canceled!"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok) {
+    if (BoxMessages::resetAllMessage(this) == QMessageBox::Ok) {
         if (burning) {
             burnProcess->kill();
         }
@@ -175,19 +177,7 @@ void XBoxBurner::reset_triggered()
 
 void XBoxBurner::about_triggered()
 {
-    QMessageBox::about(this, tr("About XBoxBurner"),
-        QString("<h2>XBoxBurner %1</h2>").arg(QCoreApplication::applicationVersion()) + "<p><b><i>Easy to use burner for XBox and XBox360 game images</b></i>"
-                                                                                        "<p>Development and Copyright &copy; 2011 - 2012 Kai Heitkamp"
-                                                                                        "<br>Based on <a href='http://code.google.com/p/qisoburn'>qisoburn</a>, Copyright &copy; 2010 mycelo"
-                                                                                        "<p><a href='mailto:dynup<dynup@ymail.com>?subject=XBoxBurner%20feedback'>dynup@ymail.com</a>"
-                                                                                        " | <a href='dynup.de.vu'>dynup.de.vu</a>"
-                                                                                        "<p>XBoxBurner needs <i>dvd+rw-mediainfo</i> and <i>growisofs</i> to run! Both are parts of the <a href='http://fy.chalmers.se/~appro/linux/DVD+RW/'>dvd+rw-tools</a>! "
-                                                                                        "They are available for <a href='http://fy.chalmers.se/~appro/linux/DVD+RW/tools/?M=D'>Linux</a> and <a href='http://fy.chalmers.se/~appro/linux/DVD+RW/tools/win32/'>Windows</a>, "
-                                                                                        "for MacOSX via <a href='http://finkproject.org'>Fink</a> or <a href='http://www.macports.org'>MacPorts</a>! The tools must be in PATH or in the same directory of XBoxBurner!"
-                                                                                        "<p>Big thanks to the trolls at Trolltech Norway for his excellent Qt toolkit, the guys at Nokia for the continuation and all people at the Qt Project for the open source development of Qt!"
-                                                                                        "<p>"
-            + QCoreApplication::applicationName() + " is licensed under the GNU General Public License v3 (<a href='http://www.gnu.org/licenses/gpl-3.0.txt'>GPLv3</a>)."
-                                                    "<p><font color='red'>I don't support piracy! If you copy games with this software, you must have the original and it's for your private use only!</font color>");
+    BoxMessages::aboutMessage(this);
 }
 
 void XBoxBurner::exit_triggered()
@@ -300,13 +290,13 @@ void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitS
 
         showStatusBarMessage(tr("Ready."));
     } else {
-        QString errorMessage = tr("Error: ") + burnProcess->errorString() + " (" + QString::number(exitCode) + ", " + QString::number(exitStatus) + ")";
+        QString errorMessage = Messages::burningErrorMessage(burnProcess->errorString(), exitCode, exitStatus);
 
         ui->plain_text_edit_with_logs->appendPlainText(errorMessage);
         showStatusBarMessage(errorMessage);
     }
 
-    ui->label_info->setText(tr("Burner: <font color=grey>%1</font><br>Media: <font color=grey>%2</font>").arg(burner_txt).arg(media_txt.filter(QRegularExpression(".*\\S.*")).join(",").simplified().replace(", ", ",")));
+    ui->label_info->setText(Messages::burnerMediaAvailability(burner_txt, media_txt));
 
     delete checkMediaProcess;
 }
@@ -390,8 +380,8 @@ void XBoxBurner::truncateImage()
     QFile file(fileName);
 
     if (file.size() > size && ui->check_box_backup_creation->isChecked()) {
-        showStatusBarMessage(tr("Creating backup of game image..."));
-        ui->plain_text_edit_with_logs->appendPlainText("Creating backup of game image...");
+        showStatusBarMessage(Messages::backup_creation);
+        ui->plain_text_edit_with_logs->appendPlainText(Messages::backup_creation);
 
         startBusy();
 
@@ -408,9 +398,9 @@ void XBoxBurner::truncateImage()
 
 bool XBoxBurner::createBackup()
 {
-    QString fileName = ui->lineedit_image_path->text().simplified();
-    QString source = fileName;
-    QString destination = fileName.mid(0, fileName.lastIndexOf(".")) + "_backup" + fileName.mid(fileName.lastIndexOf("."), fileName.length() - fileName.lastIndexOf("."));
+    QString file_name = ui->lineedit_image_path->text().simplified();
+    QString source = file_name;
+    QString destination = Messages::backupCreationDestination(file_name);
 
     return QFile::copy(source, destination);
 }
@@ -491,7 +481,7 @@ void XBoxBurner::burnProcess_readyReadStandardOutput()
                     ui->progress_bar_unit_buffer_unit->setValue(ubuProgress);
                 }
 
-                const QString image = ui->lineedit_image_path->text().simplified().mid(ui->lineedit_image_path->text().simplified().lastIndexOf("/") + 1, ui->lineedit_image_path->text().simplified().length() - ui->lineedit_image_path->text().simplified().lastIndexOf("/"));
+                const QString image = Messages::imageFromImagePath(ui->lineedit_image_path->text());
                 const QString drive = ui->lineedit_burner_path->text().simplified();
                 const QString speed = progress_line_match.captured(1).simplified();
                 const QString eta = progress_line_match.captured(2).simplified();
@@ -520,7 +510,7 @@ void XBoxBurner::burnProcess_finished(const int exitCode, const QProcess::ExitSt
         ui->progress_bar_burn->setValue(100);
         showStatusBarMessage(tr("Burn process successfully."));
     } else {
-        QString errorMessage = tr("Error: ") + burnProcess->errorString() + " (" + QString::number(exitCode) + ", " + QString::number(exitStatus) + ")";
+        QString errorMessage = Messages::burningErrorMessage(burnProcess->errorString(), exitCode, exitStatus);
 
         ui->plain_text_edit_with_logs->appendPlainText(errorMessage);
         showStatusBarMessage(errorMessage);
@@ -540,8 +530,8 @@ void XBoxBurner::burnProcess_finished(const int exitCode, const QProcess::ExitSt
 
 void XBoxBurner::verify()
 {
-    showStatusBarMessage(tr("Calculating checksum of image..."));
-    ui->plain_text_edit_with_logs->appendPlainText("Calculating checksum of image...");
+    showStatusBarMessage(Messages::checksum_calculation_image);
+    ui->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_image);
     ui->toolBar->actions().at(4)->setIcon(QIcon(":/images/cancel.png"));
     ui->toolBar->actions().at(4)->setText(tr("&Cancel"));
 
@@ -555,9 +545,9 @@ void XBoxBurner::verify()
 #endif
         image_future_watcher.setFuture(imageFuture);
     } else {
-        showStatusBarMessage(tr("Calculating checksum of DVD..."));
+        showStatusBarMessage(Messages::checksum_calculation_dvd);
         ui->plain_text_edit_with_logs->appendPlainText("Checksum of image already exists.");
-        ui->plain_text_edit_with_logs->appendPlainText("Calculating checksum of DVD...");
+        ui->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_dvd);
 
         ui->progress_bar_burn->setValue(0);
 
@@ -634,8 +624,8 @@ void XBoxBurner::calculateMD5HashOfImage()
     } else {
         imageMd5sum = result;
         ui->plain_text_edit_with_logs->appendPlainText("Checksum of image: " + result);
-        showStatusBarMessage(tr("Calculating checksum of DVD..."));
-        ui->plain_text_edit_with_logs->appendPlainText("Calculating checksum of DVD...");
+        showStatusBarMessage(Messages::checksum_calculation_dvd);
+        ui->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_dvd);
 
         ui->progress_bar_burn->setValue(0);
 
