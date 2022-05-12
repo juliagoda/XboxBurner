@@ -44,11 +44,14 @@ public:
     explicit XBoxBurner(const ApplicationInformations& new_applications_informations, QWidget* parent = 0);
     ~XBoxBurner();
 
+    void showStatusBarMessage(const QString& text);
+    bool createBackup();
+
 protected:
     QMenu* createPopupMenu();
     void keyReleaseEvent(QKeyEvent* keyEvent);
     bool event(QEvent* event);
-    void showStatusBarMessage(const QString& text);
+
     Ui::XBoxBurner* ui;
     QFutureWatcher<bool> backup_future_watcher;
     QFutureWatcher<QString> image_future_watcher, dvd_future_watcher;
@@ -93,7 +96,6 @@ private:
     void startBurnProcess();
     QString layerBreak();
     void truncateImage();
-    bool createBackup();
     void resizeImage();
     void verify();
     QString calculatingImageMD5();
