@@ -44,7 +44,7 @@ public:
         burner_widgets(new_burner_widgets),
         burner_progress_bars_setup(
             QSharedPointer<BurnerProgressBarsSetup>(
-                new BurnerProgressBarsSetup({new_burner_widgets.progress_bar_burn,
+                new BurnerProgressBarsSetup(BurnerProgressBarsWidgets{new_burner_widgets.progress_bar_burn,
                                              new_burner_widgets.progress_bar_ring_buffer_unit,
                                              new_burner_widgets.progress_bar_unit_buffer_unit}))),
         next_stage{nullptr},
