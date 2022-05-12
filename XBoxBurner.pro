@@ -13,7 +13,6 @@ CODECFORSRC  = UTF-8
 QMAKE_CXXFLAGS += -std=c++2a -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
 
 SOURCES   += src/main.cpp src/xboxburner.cpp \
-    barmessages.cpp \
     src/applicationinformations.cpp \
     src/burner/burnerprogressbarssetup.cpp \
     src/burner/burnerstartstage.cpp \
@@ -37,7 +36,6 @@ SOURCES   += src/main.cpp src/xboxburner.cpp \
     src/strategies/toolbardatastrategy.cpp
 
 HEADERS   += src/xboxburner.h \
-    barmessages.h \
     src/applicationinformations.h \
     src/burner/burnerprogressbarssetup.h \
     src/burner/burnerstage.h \
