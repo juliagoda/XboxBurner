@@ -45,5 +45,4 @@ bool TruncateImageStartStage::handle()
     QFuture<bool> backupFuture = QtConcurrent::run(&TruncateImageStartStage::createBackup, this);
 #endif
     burner_widgets.backup_future_watcher->setFuture(backupFuture);
-
 }

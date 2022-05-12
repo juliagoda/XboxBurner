@@ -13,7 +13,6 @@ BurnerStartStage::BurnerStartStage(const BurnerWidgets& new_burner_widgets) :
 
 }
 
-
 bool BurnerStartStage::handle()
 {
     burner_widgets.status_bar->showMessage(QObject::tr("Starting burn process..."));
@@ -54,7 +53,6 @@ bool BurnerStartStage::handle()
     return BurnerStage::handle();
 }
 
-
 QString BurnerStartStage::layerBreak()
 {
     QString result("");
@@ -84,7 +82,6 @@ QString BurnerStartStage::layerBreak()
 
     return result;
 }
-
 
 void BurnerStartStage::burnProcess_readyReadStandardOutput()
 {
@@ -149,7 +146,6 @@ void BurnerStartStage::burnProcess_readyReadStandardOutput()
         }
     }
 }
-
 
 void BurnerStartStage::burnProcess_finished(const int exitCode, const QProcess::ExitStatus exitStatus)
 {

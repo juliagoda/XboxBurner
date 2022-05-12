@@ -6,6 +6,7 @@
 CurrentBurningVerificationStage::CurrentBurningVerificationStage(const BurnerWidgets& new_burner_widgets) :
     BurnerStage(new_burner_widgets)
 {
+
 }
 
 bool CurrentBurningVerificationStage::handle()

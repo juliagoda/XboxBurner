@@ -7,6 +7,7 @@ PathsAndSpeedContentVerificationStage::PathsAndSpeedContentVerificationStage(con
     BurnerStage(new_burner_widgets)
 
 {
+
 }
 
 bool PathsAndSpeedContentVerificationStage::handle()
