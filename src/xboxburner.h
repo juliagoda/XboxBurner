@@ -34,15 +34,18 @@
 #include <winioctl.h>
 #endif
 
-namespace Ui {
-class XBoxBurner;
+namespace Ui
+{
+  class XBoxBurner;
 }
 
-class XBoxBurner : public QMainWindow {
+class XBoxBurner : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    explicit XBoxBurner(const ApplicationInformations& new_applications_informations, QWidget* parent = 0);
+    explicit XBoxBurner(const ApplicationInformations& new_applications_informations,
+                        QWidget* parent = 0);
     ~XBoxBurner();
 
     void showStatusBarMessage(const QString& text);
@@ -76,7 +79,8 @@ protected slots:
     void on_push_button_logs_reset_clicked();
 
     void getMediaInfo_readyReadStandardOutput();
-    void getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus);
+    void getMediaInfo_finished(const int exitCode,
+                               const QProcess::ExitStatus exitStatus);
 
     void setMaximalPossibleMD5HashValue(qint64 maximal_value);
     void calculateMD5HashForProgressBar(qint64 value);

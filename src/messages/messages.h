@@ -22,8 +22,11 @@
 
 class Messages {
 public:
-    static const QString burnerMediaAvailability(const QString& burner_txt, const QStringList& media_txt_list);
-    static const QString burningErrorMessage(const QString& burn_process_error_message, int exit_code, int exit_status);
+    static const QString burnerMediaAvailability(const QString& burner_txt,
+                                                 const QStringList& media_txt_list);
+    static const QString burningErrorMessage(const QString& burn_process_error_message,
+                                             int exit_code,
+                                             int exit_status);
     static const QString imageFromImagePath(const QString& image_path);
     static const QString backupCreationDestination(const QString& image_path);
 

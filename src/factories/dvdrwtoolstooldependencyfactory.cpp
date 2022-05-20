@@ -50,9 +50,8 @@ DvdrwtoolsToolDependencyFactory::DvdrwtoolsToolDependencyFactory(const QString& 
 
 const QStringList DvdrwtoolsToolDependencyFactory::showToolDetectionInformations()
 {
-    if (toolExistsInSystem()) {
+    if (toolExistsInSystem())
         return QStringList() << QObject::tr("Info: %1 found in %2\n").arg(tool_name).arg(file.data()->fileName().mid(0, file.data()->fileName().lastIndexOf("/"))) << getToolVersion();
-    }
 
     return QStringList() << QObject::tr("Error: %1 not found!").arg(tool_name);
 }

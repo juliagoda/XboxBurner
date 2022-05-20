@@ -29,11 +29,14 @@
 
 class ListSettingsWidget;
 
-class Settings : public QSettings {
+class Settings : public QSettings
+{
     Q_OBJECT
 
 public:
-    explicit Settings(const QSharedPointer<ListSettingsWidget> new_widgets_list, const ApplicationInformations& applications_informations, QObject* parent = nullptr);
+    explicit Settings(const QSharedPointer<ListSettingsWidget> new_widgets_list,
+                      const ApplicationInformations& applications_informations,
+                      QObject* parent = nullptr);
     void loadSettings();
     void saveSettings();
 

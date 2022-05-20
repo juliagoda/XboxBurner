@@ -74,7 +74,6 @@ void MainWindowInitializator::preparePathCompleters()
     const QStringList name_filters_for_cd_format { file_extensions };
     QPointer<QLineEdit> image_path_place { ui->lineedit_image_path };
     preparePathCompleter(image_path_place, name_filters_for_cd_format);
-
     QPointer<QLineEdit> burner_path_place { ui->lineedit_burner_path };
     preparePathCompleter(burner_path_place, QStringList());
 }
@@ -93,9 +92,8 @@ void MainWindowInitializator::preparePathCompleter(QPointer<QLineEdit> const com
 
 void MainWindowInitializator::showMainWindow()
 {
-    if (!mainWindowShowed()) {
+    if (!mainWindowShowed())
         show();
-    }
 }
 
 bool MainWindowInitializator::mainWindowShowed()
@@ -106,11 +104,10 @@ bool MainWindowInitializator::mainWindowShowed()
 void MainWindowInitializator::fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list, const ApplicationInformations& new_applications_informations)
 {
     ui->plain_text_edit_with_logs->appendPlainText(tr("(%1) XBoxBurner %2 started.").arg(QDateTime::currentDateTime().toString(), new_applications_informations.getApplicationVersion()));
-
     QListIterator<QSharedPointer<DvdrwtoolsDependencyFactory>> external_dependencies_list_iterator(external_dependencies_list);
 
-    while (external_dependencies_list_iterator.hasNext()) {
-
+    while (external_dependencies_list_iterator.hasNext())
+    {
         auto external_dependency = external_dependencies_list_iterator.next();
         ui->plain_text_edit_with_logs->appendPlainText(external_dependency.data()->showToolDetectionInformations().join("\n"));
     }

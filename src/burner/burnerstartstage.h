@@ -11,7 +11,8 @@ public:
     bool handle() override;
 
 private slots:
-    void burnProcess_finished(const int exitCode, const QProcess::ExitStatus exitStatus);
+    void burnProcess_finished(const int exitCode,
+                              const QProcess::ExitStatus exitStatus);
     void burnProcess_readyReadStandardOutput();
 
 private:

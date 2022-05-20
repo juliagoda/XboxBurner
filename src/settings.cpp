@@ -14,7 +14,9 @@ Settings::Settings(QSharedPointer<ListSettingsWidget> new_widgets_list, const Ap
 void Settings::loadSettings()
 {
     QListIterator<QSharedPointer<WidgetDataSaveStrategy>> widgets_list_iterator(*widgets_list.data()->getListWidgetStrategies());
-    while (widgets_list_iterator.hasNext()) {
+
+    while (widgets_list_iterator.hasNext())
+    {
         auto widget_pointer = widgets_list_iterator.next();
         auto widget = widget_pointer.data();
         widget->loadData(this);
@@ -24,7 +26,9 @@ void Settings::loadSettings()
 void Settings::saveSettings()
 {
     QListIterator<QSharedPointer<WidgetDataSaveStrategy>> widgets_list_iterator(*widgets_list.data()->getListWidgetStrategies());
-    while (widgets_list_iterator.hasNext()) {
+
+    while (widgets_list_iterator.hasNext())
+    {
         auto widget_pointer = widgets_list_iterator.next();
         auto widget = widget_pointer.data();
         widget->saveData(this);
