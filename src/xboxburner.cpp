@@ -28,6 +28,13 @@
 #include "messages/boxmessages.h"
 #include "messages/messages.h"
 
+#include "burner/burnerprogressbarssetup.h"
+#include "burner/burnerstartstage.h"
+#include "burner/burningacceptancestage.h"
+#include "burner/currentburningverificationstage.h"
+#include "burner/pathsandspeedcontentverificationstage.h"
+#include "burner/truncateimagestartstage.h"
+
 #include <QScopedPointer>
 
 #include <QAction>
@@ -44,9 +51,11 @@
 XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informations, QWidget* parent)
     : QMainWindow(parent)
     , ui { new Ui::XBoxBurner }
+    , backup { new Backup(createStructFromBurnerWidgets()) }
+    , burner_widgets { createStructFromBurnerWidgets() }
     , applications_informations { new_applications_informations }
     , imageMd5sum { QString("") }
-    , dvdMd5sum({ QString("") })
+    , dvdMd5sum { QString("") }
     , md5ProgressMax { 0 }
     , burning { false }
     , verifying { false }
@@ -54,6 +63,27 @@ XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informati
     , blockSize { 2048 }
 {
     ui->setupUi(this);
+}
+
+BurnerWidgets XBoxBurner::createStructFromBurnerWidgets()
+{
+    BurnerWidgets burner_widgets;
+    burner_widgets.combo_box_dvd_format = ui->combo_box_dvd_format;
+    burner_widgets.check_box_dao_mode = ui->check_box_dao_mode;
+    burner_widgets.check_box_dvd_compat = ui->check_box_dvd_compat;
+    burner_widgets.check_box_dry_run = ui->check_box_dry_run;
+    burner_widgets.combo_box_write_speed = ui->combo_box_write_speed;
+    burner_widgets.lineedit_burner_path = ui->lineedit_burner_path;
+    burner_widgets.lineedit_image_path = ui->lineedit_image_path;
+    burner_widgets.plain_text_edit_with_logs = ui->plain_text_edit_with_logs;
+    burner_widgets.toolbar = ui->toolBar;
+    burner_widgets.progress_bar_burn = ui->progress_bar_burn;
+    burner_widgets.progress_bar_ring_buffer_unit = ui->progress_bar_ring_buffer_unit;
+    burner_widgets.progress_bar_unit_buffer_unit = ui->progress_bar_unit_buffer_unit;
+    burner_widgets.backup_future_watcher = &backup_future_watcher;
+    burner_widgets.check_box_backup_creation = ui->check_box_backup_creation;
+    burner_widgets.status_bar = ui->statusBar;
+    return burner_widgets;
 }
 
 void XBoxBurner::initializeSettingsSave()
@@ -109,31 +139,15 @@ void XBoxBurner::on_push_button_check_clicked()
 
 void XBoxBurner::startBurn_triggered()
 {
-    if (burning) {
-        if (BoxMessages::cancelBurnProcessMessage(this) == QMessageBox::Ok) {
-            burnProcess->kill();
-        }
-    } else {
-        if (!ui->lineedit_image_path->text().isEmpty() && !ui->lineedit_burner_path->text().isEmpty() && !ui->combo_box_write_speed->currentText().isEmpty()) {
-            if (BoxMessages::startBurnProcessMessage(this) == QMessageBox::Ok) {
-                ui->plain_text_edit_with_logs->appendPlainText(Messages::burn_process_start_with_date);
+    CurrentBurningVerificationStage* verification_stage = new CurrentBurningVerificationStage(burner_widgets);
+    PathsAndSpeedContentVerificationStage* paths_and_speed_content_verification_stage = new PathsAndSpeedContentVerificationStage(burner_widgets);
+    BurningAcceptanceStage* burning_acceptance_stage = new BurningAcceptanceStage(burner_widgets);
+    TruncateImageStartStage* truncate_image_start_stage = new TruncateImageStartStage(burner_widgets, backup);
+    BurnerStartStage* burner_start_stage = new BurnerStartStage(burner_widgets);
 
-                ui->toolBar->actions().at(3)->setIcon(QIcon(":/images/cancel.png"));
-                ui->toolBar->actions().at(3)->setText(tr("&Cancel"));
-
-                ui->progress_bar_burn->setValue(0);
-                ui->progress_bar_ring_buffer_unit->setValue(0);
-                ui->progress_bar_unit_buffer_unit->setValue(0);
-
-                if (ui->combo_box_dvd_format->currentIndex() == 3) {
-                    showStatusBarMessage(tr("Truncating XGD3 image..."));
-                    truncateImage();
-                } else {
-                    startBurnProcess();
-                }
-            }
-        }
-    }
+    CurrentBurningVerificationStage* start_stage = verification_stage;
+    verification_stage->next(paths_and_speed_content_verification_stage)->next(burning_acceptance_stage)->next(truncate_image_start_stage)->next(burner_start_stage);
+    start_stage->handle();
 }
 
 void XBoxBurner::verify_triggered()
@@ -299,233 +313,6 @@ void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitS
     ui->label_info->setText(Messages::burnerMediaAvailability(burner_txt, media_txt));
 
     delete checkMediaProcess;
-}
-
-void XBoxBurner::startBurnProcess()
-{
-    showStatusBarMessage(tr("Starting burn process..."));
-
-    burning = true;
-
-    burnProcess = new QProcess();
-
-    qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
-    connect(burnProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(burnProcess_readyReadStandardOutput()));
-    connect(burnProcess, SIGNAL(readyReadStandardError()), this, SLOT(burnProcess_readyReadStandardOutput()));
-    connect(burnProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(burnProcess_finished(int, QProcess::ExitStatus)));
-
-    QStringList arguments;
-    QString layerbreak = layerBreak();
-
-    if (!layerbreak.isEmpty()) {
-        arguments.append("-use-the-force-luke=break:" + layerbreak);
-    }
-
-    if (ui->combo_box_dvd_format->currentIndex() != 4) {
-        if (ui->check_box_dao_mode->isChecked()) {
-            arguments.append("-use-the-force-luke=dao");
-        }
-
-        if (ui->check_box_dvd_compat->isChecked()) {
-            arguments.append("-dvd-compat");
-        }
-    }
-
-    if (ui->check_box_dry_run->isChecked()) {
-        arguments.append("-dry-run");
-    }
-
-    arguments.append("-speed=" + ui->combo_box_write_speed->currentText().simplified());
-    arguments.append("-Z");
-    arguments.append(ui->lineedit_burner_path->text().simplified() + "=" + ui->lineedit_image_path->text().simplified());
-
-    burnProcess->setProcessChannelMode(QProcess::MergedChannels);
-    QScopedPointer<DvdrwtoolsToolDependencyFactory> growisofs { new DvdrwtoolsToolDependencyFactory("growisofs") };
-    burnProcess->start(growisofs.data()->getFileNamePath(), arguments);
-}
-
-QString XBoxBurner::layerBreak()
-{
-    QString result("");
-
-    switch (ui->combo_box_dvd_format->currentIndex()) {
-    case 0:
-        result = "";
-        break;
-    case 1:
-        result = "1913776";
-        break;
-    case 2:
-        result = "1913760";
-        break;
-    case 3:
-        result = "2086912";
-        break;
-    case 4:
-        result = "2133520";
-        break;
-    case 5:
-        QString tmp = ui->combo_box_dvd_format->itemText(5);
-        result = tmp.mid(tmp.indexOf("(") + 1, tmp.indexOf(")") - tmp.indexOf("(") - 1);
-        break;
-    }
-
-    return result;
-}
-
-void XBoxBurner::truncateImage()
-{
-    qint64 size = Q_INT64_C(8547991552);
-    QString fileName = ui->lineedit_image_path->text().simplified();
-    QFile file(fileName);
-
-    if (file.size() > size && ui->check_box_backup_creation->isChecked()) {
-        showStatusBarMessage(Messages::backup_creation);
-        ui->plain_text_edit_with_logs->appendPlainText(Messages::backup_creation);
-
-        startBusy();
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QFuture<bool> backupFuture = QtConcurrent::run(this, &XBoxBurner::createBackup);
-#else
-        QFuture<bool> backupFuture = QtConcurrent::run(&XBoxBurner::createBackup, this);
-#endif
-        backup_future_watcher.setFuture(backupFuture);
-    } else {
-        startBurnProcess();
-    }
-}
-
-bool XBoxBurner::createBackup()
-{
-    QString file_name = ui->lineedit_image_path->text().simplified();
-    QString source = file_name;
-    QString destination = Messages::backupCreationDestination(file_name);
-
-    return QFile::copy(source, destination);
-}
-
-void XBoxBurner::logBackupCreation()
-{
-    bool result = backup_future_watcher.result();
-
-    stopBusy();
-
-    if (result) {
-        showStatusBarMessage(tr("Creation backup of game image successfully!"));
-        ui->plain_text_edit_with_logs->appendPlainText("Creation backup of game image successfully!");
-
-        resizeImage();
-    } else {
-        showStatusBarMessage(tr("Creation backup of game image failed!"));
-        ui->plain_text_edit_with_logs->appendPlainText("Creation backup of game image failed! Burn process stopped!");
-    }
-}
-
-void XBoxBurner::resizeImage()
-{
-    qint64 size = Q_INT64_C(8547991552);
-    QFile file(ui->lineedit_image_path->text().simplified());
-
-    if (file.resize(size)) {
-        startBurnProcess();
-    } else {
-        showStatusBarMessage(tr("Resize game image failed!"));
-        ui->plain_text_edit_with_logs->appendPlainText("Resize game image failed! Burn process stopped!");
-    }
-}
-
-void XBoxBurner::burnProcess_readyReadStandardOutput()
-{
-    int burnProgress, rbuProgress, ubuProgress;
-    QString growisofsData;
-    QRegularExpression progressLine("\\d+/\\d+\\s*\\(\\s*((?:[0-9]|[.,])+)\\%\\s*\\)\\s*@((?:[0-9]|[.,])+)[xX],\\s+\\w+\\s+((?:[0-9]|[:?])+)\\s+\\w+\\s+((?:[0-9]|[.,])+)\\%\\s+\\w+\\s+((?:[0-9]|[.,])+).*");
-
-    while (burnProcess->canReadLine()) {
-        growisofsData = burnProcess->readAll().simplified().data();
-
-        if (!growisofsData.isEmpty()) {
-            ui->plain_text_edit_with_logs->appendPlainText(growisofsData);
-        }
-
-        if (growisofsData.contains("flushing cache")) {
-            ui->progress_bar_ring_buffer_unit->setValue(0);
-            ui->progress_bar_unit_buffer_unit->setValue(0);
-
-            startBusy(true);
-
-            showStatusBarMessage(tr("Fluching cache..."));
-        } else if (growisofsData.contains("closing track")) {
-            showStatusBarMessage(tr("Closing track..."));
-        } else if (growisofsData.contains("closing disc")) {
-            showStatusBarMessage(tr("Closing disc..."));
-        } else if (growisofsData.contains("reloading tray")) {
-            showStatusBarMessage(tr("Reloading tray..."));
-        } else if (!growisofsData.isEmpty()) {
-            QRegularExpressionMatch progress_line_match = progressLine.match(growisofsData);
-
-            if (progress_line_match.hasMatch()) {
-                burnProgress = progress_line_match.captured(0).simplified().toFloat();
-                rbuProgress = progress_line_match.captured(3).simplified().toFloat();
-                ubuProgress = progress_line_match.captured(4).simplified().toFloat();
-
-                if (burnProgress > 0 && burnProgress <= 100) {
-                    ui->progress_bar_burn->setValue(burnProgress);
-                }
-
-                if (rbuProgress > 0 && rbuProgress <= 100) {
-                    ui->progress_bar_ring_buffer_unit->setValue(rbuProgress);
-                }
-
-                if (ubuProgress > 0 && ubuProgress <= 100) {
-                    ui->progress_bar_unit_buffer_unit->setValue(ubuProgress);
-                }
-
-                const QString image = Messages::imageFromImagePath(ui->lineedit_image_path->text());
-                const QString drive = ui->lineedit_burner_path->text().simplified();
-                const QString speed = progress_line_match.captured(1).simplified();
-                const QString eta = progress_line_match.captured(2).simplified();
-
-                if (eta == "??:??") {
-                    showStatusBarMessage(tr("Preparing burn process..."));
-                } else {
-                    showStatusBarMessage(tr("Burning '%1' on %2 at %3x -> ETA %4").arg(image, drive, speed, eta));
-                }
-            }
-        }
-    }
-}
-
-void XBoxBurner::burnProcess_finished(const int exitCode, const QProcess::ExitStatus exitStatus)
-{
-    stopBusy(true);
-
-    if (exitCode == 0 && exitStatus == 1) {
-        ui->progress_bar_burn->setValue(0);
-        ui->progress_bar_ring_buffer_unit->setValue(0);
-        ui->progress_bar_unit_buffer_unit->setValue(0);
-
-        showStatusBarMessage(tr("Burn process canceled."));
-    } else if (exitCode == 0 && exitStatus == 0) {
-        ui->progress_bar_burn->setValue(100);
-        showStatusBarMessage(tr("Burn process successfully."));
-    } else {
-        QString errorMessage = Messages::burningErrorMessage(burnProcess->errorString(), exitCode, exitStatus);
-
-        ui->plain_text_edit_with_logs->appendPlainText(errorMessage);
-        showStatusBarMessage(errorMessage);
-    }
-
-    ui->toolBar->actions().at(3)->setIcon(QIcon(":/images/burn.png"));
-    ui->toolBar->actions().at(3)->setText(tr("&Burn"));
-
-    burning = false;
-
-    delete burnProcess;
-
-    if (ui->check_box_data_verification->isChecked()) {
-        verify();
-    }
 }
 
 void XBoxBurner::verify()

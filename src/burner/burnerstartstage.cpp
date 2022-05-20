@@ -96,10 +96,10 @@ void BurnerStartStage::burnProcess_readyReadStandardOutput()
         if (!growisofsData.isEmpty())
             burner_widgets.plain_text_edit_with_logs->appendPlainText(growisofsData);
 
-        if (growisofsData.contains("flushing cache")) {
-            burner_widgets.progress_bar_ring_buffer_unit->setValue(0);
-            burner_widgets.progress_bar_unit_buffer_unit->setValue(0);
-            burner_progress_bars_setup.data()->resetBurnerProgressBarValues();
+        if (growisofsData.contains("flushing cache"))
+        {
+            burner_progress_bars_setup.setValuesProgressBarsToZero();
+            burner_progress_bars_setup.resetBurnerProgressBarValues();
             burner_widgets.status_bar->showMessage(QObject::tr("Fluching cache..."));
         }
         else if (growisofsData.contains("closing track"))
@@ -149,13 +149,11 @@ void BurnerStartStage::burnProcess_readyReadStandardOutput()
 
 void BurnerStartStage::burnProcess_finished(const int exitCode, const QProcess::ExitStatus exitStatus)
 {
-    burner_progress_bars_setup.data()->restoreBurnerProgressBarValues();
+    burner_progress_bars_setup.restoreBurnerProgressBarValues();
 
     if (exitCode == 0 && exitStatus == 1)
     {
-        burner_widgets.progress_bar_burn->setValue(0);
-        burner_widgets.progress_bar_ring_buffer_unit->setValue(0);
-        burner_widgets.progress_bar_unit_buffer_unit->setValue(0);
+        burner_progress_bars_setup.setValuesProgressBarsToZero();
         burner_widgets.status_bar->showMessage(QObject::tr("Burn process canceled."));
     }
     else if (exitCode == 0 && exitStatus == 0)

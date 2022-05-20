@@ -7,19 +7,12 @@
 #include <QMessageBox>
 #include <QtConcurrent>
 
-TruncateImageStartStage::TruncateImageStartStage(const BurnerWidgets& new_burner_widgets) :
-    BurnerStage(new_burner_widgets)
+TruncateImageStartStage::TruncateImageStartStage(const BurnerWidgets& new_burner_widgets,
+                                                 QPointer<Backup> new_backup) :
+    BurnerStage(new_burner_widgets),
+    backup(new_backup)
 {
 
-}
-
-bool TruncateImageStartStage::createBackup()
-{
-    QString file_name = burner_widgets.lineedit_image_path->text().simplified();
-    QString source = file_name;
-    QString destination = Messages::backupCreationDestination(file_name);
-
-    return QFile::copy(source, destination);
 }
 
 bool TruncateImageStartStage::handle()
@@ -37,12 +30,12 @@ bool TruncateImageStartStage::handle()
 
     burner_widgets.status_bar->showMessage(Messages::backup_creation);
     burner_widgets.plain_text_edit_with_logs->appendPlainText(Messages::backup_creation);
-    burner_progress_bars_setup.data()->resetRingAndUnitProgressBarsValues();
+    burner_progress_bars_setup.resetRingAndUnitProgressBarsValues();
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QFuture<bool> backupFuture = QtConcurrent::run(this, &TruncateImageStartStage::createBackup);
+    QFuture<bool> backupFuture = QtConcurrent::run(backup.data(), &Backup::create);
 #else
-    QFuture<bool> backupFuture = QtConcurrent::run(&TruncateImageStartStage::createBackup, this);
+    QFuture<bool> backupFuture = QtConcurrent::run(&Backup::create, backup.data());
 #endif
     burner_widgets.backup_future_watcher->setFuture(backupFuture);
 }

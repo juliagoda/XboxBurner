@@ -26,6 +26,7 @@
 
 #include "applicationinformations.h"
 #include "settings.h"
+#include "backup.h"
 
 #ifdef Q_OS_WIN
 #include <stdio.h>
@@ -45,7 +46,6 @@ public:
     ~XBoxBurner();
 
     void showStatusBarMessage(const QString& text);
-    bool createBackup();
 
 protected:
     QMenu* createPopupMenu();
@@ -56,6 +56,8 @@ protected:
     QFutureWatcher<bool> backup_future_watcher;
     QFutureWatcher<QString> image_future_watcher, dvd_future_watcher;
     QPointer<Settings> settings;
+    QPointer<Backup> backup;
+    BurnerWidgets burner_widgets;
 
 protected slots:
     void burn_triggered();
@@ -76,11 +78,6 @@ protected slots:
     void getMediaInfo_readyReadStandardOutput();
     void getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus);
 
-    void logBackupCreation();
-
-    void burnProcess_readyReadStandardOutput();
-    void burnProcess_finished(const int exitCode, const QProcess::ExitStatus exitStatus);
-
     void setMaximalPossibleMD5HashValue(qint64 maximal_value);
     void calculateMD5HashForProgressBar(qint64 value);
     void calculateMD5HashOfImage();
@@ -92,11 +89,8 @@ protected slots:
     void toolBar_toolButtonTextUnderIcon();
 
 private:
+    BurnerWidgets createStructFromBurnerWidgets();
     void initializeSettingsSave();
-    void startBurnProcess();
-    QString layerBreak();
-    void truncateImage();
-    void resizeImage();
     void verify();
     QString calculatingImageMD5();
     QString calculatingDvdMD5();

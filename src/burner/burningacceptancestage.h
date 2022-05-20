@@ -2,10 +2,7 @@
 #define BURNINGACCEPTANCESTAGE_H
 
 #include "burnerstage.h"
-
-#include <QPlainTextEdit>
-#include <QToolBar>
-#include <QProgressBar>
+#include "burnerwidgets.h"
 
 class BurningAcceptanceStage : public BurnerStage
 {

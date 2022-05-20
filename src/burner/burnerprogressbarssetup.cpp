@@ -6,6 +6,13 @@ BurnerProgressBarsSetup::BurnerProgressBarsSetup(const BurnerProgressBarsWidgets
 
 }
 
+void BurnerProgressBarsSetup::setValuesProgressBarsToZero()
+{
+    burner_progress_bars_widgets.progress_bar_ring_buffer_unit->setValue(0);
+    burner_progress_bars_widgets.progress_bar_unit_buffer_unit->setValue(0);
+    burner_progress_bars_widgets.progress_bar_burn->setValue(0);
+}
+
 void BurnerProgressBarsSetup::resetBurnerProgressBarValues()
 {
     burner_progress_bars_widgets.progress_bar_burn->setMinimum(0);

@@ -14,6 +14,7 @@ QMAKE_CXXFLAGS += -std=c++2a -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
 
 SOURCES   += src/main.cpp src/xboxburner.cpp \
     src/applicationinformations.cpp \
+    src/backup.cpp \
     src/burner/burnerprogressbarssetup.cpp \
     src/burner/burnerstartstage.cpp \
     src/burner/burningacceptancestage.cpp \
@@ -37,9 +38,11 @@ SOURCES   += src/main.cpp src/xboxburner.cpp \
 
 HEADERS   += src/xboxburner.h \
     src/applicationinformations.h \
+    src/backup.h \
     src/burner/burnerprogressbarssetup.h \
     src/burner/burnerstage.h \
     src/burner/burnerstartstage.h \
+    src/burner/burnerwidgets.h \
     src/burner/burningacceptancestage.h \
     src/burner/currentburningverificationstage.h \
     src/burner/pathsandspeedcontentverificationstage.h \

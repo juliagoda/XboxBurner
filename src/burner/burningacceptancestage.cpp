@@ -18,9 +18,7 @@ bool BurningAcceptanceStage::handle()
     burner_widgets.plain_text_edit_with_logs->appendPlainText(Messages::burn_process_start_with_date);
     burner_widgets.toolbar->actions().at(3)->setIcon(QIcon(":/images/cancel.png"));
     burner_widgets.toolbar->actions().at(3)->setText(QObject::tr("&Cancel"));
-    burner_widgets.progress_bar_burn->setValue(0);
-    burner_widgets.progress_bar_ring_buffer_unit->setValue(0);
-    burner_widgets.progress_bar_unit_buffer_unit->setValue(0);
+    burner_progress_bars_setup.setValuesProgressBarsToZero();
 
     return BurnerStage::handle();
 }

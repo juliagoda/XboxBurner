@@ -23,6 +23,7 @@
 #include "fileextensions.h"
 #include "listsettingswidget.h"
 #include "strategies/widgetdatasavestrategy.h"
+#include "backup.h"
 #include "ui_xboxburner.h"
 
 #include <QCompleter>
@@ -40,6 +41,7 @@ MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& 
     preparePathCompleters();
     showStatusBarMessage(tr("Ready."));
     prepareFontStyleForInformationLabel();
+    initializeConnections();
 }
 
 void MainWindowInitializator::initializeSettingsLoad()
@@ -49,7 +51,7 @@ void MainWindowInitializator::initializeSettingsLoad()
 
 void MainWindowInitializator::initializeConnections()
 {
-    QObject::connect(&backup_future_watcher, &QFutureWatcher<bool>::finished, this, &MainWindowInitializator::logBackupCreation);
+    QObject::connect(&backup_future_watcher, &QFutureWatcher<bool>::finished, backup, &Backup::log);
     QObject::connect(&image_future_watcher, &QFutureWatcher<QString>::finished, this, &MainWindowInitializator::calculateMD5HashOfImage);
     QObject::connect(&dvd_future_watcher, &QFutureWatcher<QString>::finished, this, &MainWindowInitializator::calculateMD5HashOfDVD);
     QObject::connect(this, &MainWindowInitializator::md5SumMaximum, this, &MainWindowInitializator::setMaximalPossibleMD5HashValue);

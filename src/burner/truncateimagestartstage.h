@@ -1,17 +1,20 @@
 #ifndef TRUNCATEIMAGESTARTSTAGE_H
 #define TRUNCATEIMAGESTARTSTAGE_H
 
-#include "burnerstage.h"
+#include <QPointer>
 
+#include "burnerstage.h"
+#include "backup.h"
 
 class TruncateImageStartStage : public BurnerStage
 {
 public:
-    TruncateImageStartStage(const BurnerWidgets& new_burner_widgets);
+    TruncateImageStartStage(const BurnerWidgets& new_burner_widgets,
+                            QPointer<Backup> new_backup);
     bool handle() override;
 
 private:
-    bool createBackup();
+    QPointer<Backup> backup;
 };
 
 #endif // TRUNCATEIMAGESTARTSTAGE_H
