@@ -12,8 +12,7 @@ CODECFORSRC  = UTF-8
 
 QMAKE_CXXFLAGS += -std=c++2a -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
 
-SOURCES   += src/main.cpp src/xboxburner.cpp \
-    src/applicationinformations.cpp \
+SOURCES += src/applicationinformations.cpp \
     src/backup.cpp \
     src/burner/burnerprogressbarssetup.cpp \
     src/burner/burnerstartstage.cpp \
@@ -24,21 +23,20 @@ SOURCES   += src/main.cpp src/xboxburner.cpp \
     src/factories/dvdrwtoolsdependencyfactory.cpp \
     src/factories/dvdrwtoolstooldependencyfactory.cpp \
     src/factories/externaldependencyfactory.cpp \
+    src/fileextensions.cpp \
+    src/listsettingswidget.cpp \
+    src/mainwindowinitializator.cpp \
     src/messages/boxmessages.cpp \
     src/messages/messages.cpp \
+    src/settings.cpp \
     src/strategies/checkboxdatasavestrategy.cpp \
     src/strategies/comboboxdatasavestrategy.cpp \
-    src/fileextensions.cpp \
     src/strategies/lineeditdatasavestrategy.cpp \
-    src/listsettingswidget.cpp \
     src/strategies/mainwindowdatasavestrategy.cpp \
-    src/mainwindowinitializator.cpp \
-    src/settings.cpp \
-    src/strategies/toolbardatastrategy.cpp
+    src/strategies/toolbardatastrategy.cpp \
+    src/main.cpp src/xboxburner.cpp
 
-HEADERS   += src/xboxburner.h \
-    src/applicationinformations.h \
-    src/backup.h \
+HEADERS   += src/backup.h \
     src/burner/burnerprogressbarssetup.h \
     src/burner/burnerstage.h \
     src/burner/burnerstartstage.h \
@@ -50,18 +48,20 @@ HEADERS   += src/xboxburner.h \
     src/factories/dvdrwtoolsdependencyfactory.h \
     src/factories/dvdrwtoolstooldependencyfactory.h \
     src/factories/externaldependencyfactory.h \
+    src/fileextensions.h \
+    src/listsettingswidget.h \
+    src/mainwindowinitializator.h \
     src/messages/boxmessages.h \
     src/messages/messages.h \
+    src/settings.h \
     src/strategies/checkboxdatasavestrategy.h \
     src/strategies/comboboxdatasavestrategy.h \
-    src/fileextensions.h \
     src/strategies/lineeditdatasavestrategy.h \
-    src/listsettingswidget.h \
     src/strategies/mainwindowdatasavestrategy.h \
-    src/mainwindowinitializator.h \
-    src/settings.h \
     src/strategies/toolbardatastrategy.h \
-    src/strategies/widgetdatasavestrategy.h
+    src/strategies/widgetdatasavestrategy.h \
+    src/applicationinformations.h \
+    src/xboxburner.h
 
 FORMS     += resources/ui/xboxburner.ui
 RESOURCES += resources/xboxburner.qrc
