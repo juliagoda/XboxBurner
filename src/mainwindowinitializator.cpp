@@ -18,12 +18,12 @@
 
 #include "mainwindowinitializator.h"
 
-#include "applicationinformations.h"
-#include "factories/dvdrwtoolstooldependencyfactory.h"
-#include "fileextensions.h"
-#include "listsettingswidget.h"
-#include "strategies/widgetdatasavestrategy.h"
 #include "backup.h"
+#include "constants/applicationinformations.h"
+#include "constants/fileextensions.h"
+#include "dependencies/dvdrwtoolstooldependencyfactory.h"
+#include "settings/listsettingswidget.h"
+#include "settings/widgetdatasavestrategy.h"
 #include "ui_xboxburner.h"
 
 #include <QCompleter>
@@ -32,7 +32,8 @@
 #include <QFuture>
 #include <QList>
 
-MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& new_applications_informations, QWidget* parent)
+MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& new_applications_informations,
+                                                 QWidget* parent)
     : XBoxBurner { new_applications_informations, parent }
 {
     settings = new Settings(createListOfSaveLoadStrategies(), new_applications_informations);
@@ -78,7 +79,8 @@ void MainWindowInitializator::preparePathCompleters()
     preparePathCompleter(burner_path_place, QStringList());
 }
 
-void MainWindowInitializator::preparePathCompleter(QPointer<QLineEdit> const completer_path_place, const QStringList& name_filters)
+void MainWindowInitializator::preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
+                                                   const QStringList& name_filters)
 {
     QPointer<QCompleter> path_completer { new QCompleter(this) };
     QPointer<QFileSystemModel> file_system_model { new QFileSystemModel(path_completer) };
@@ -101,7 +103,8 @@ bool MainWindowInitializator::mainWindowShowed()
     return isVisible();
 }
 
-void MainWindowInitializator::fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list, const ApplicationInformations& new_applications_informations)
+void MainWindowInitializator::fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list,
+                                                    const ApplicationInformations& new_applications_informations)
 {
     ui->plain_text_edit_with_logs->appendPlainText(tr("(%1) XBoxBurner %2 started.").arg(QDateTime::currentDateTime().toString(), new_applications_informations.getApplicationVersion()));
     QListIterator<QSharedPointer<DvdrwtoolsDependencyFactory>> external_dependencies_list_iterator(external_dependencies_list);

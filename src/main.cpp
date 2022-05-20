@@ -21,7 +21,7 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#include "applicationinformations.h"
+#include "constants/applicationinformations.h"
 #include "mainwindowinitializator.h"
 
 #include <QApplication>

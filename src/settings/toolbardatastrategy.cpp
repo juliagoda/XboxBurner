@@ -16,22 +16,21 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "toolbardatastrategy.h"
 
-#include "widgetdatasavestrategy.h"
+#include "settings.h"
 
-#include <QLineEdit>
-#include <QPointer>
-#include <QString>
+ToolBarDataStrategy::ToolBarDataStrategy(QPointer<QToolBar> new_tool_bar)
+    : tool_bar { new_tool_bar }
+{}
 
-class Settings;
+void ToolBarDataStrategy::loadData(QPointer<Settings> settings)
+{
+    QVariant tool_button_style_variant = settings.data()->value("MainWindow/ToolButtonStyle", 2);
+    tool_bar.data()->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(tool_button_style_variant.toInt()));
+}
 
-class LineEditDataSaveStrategy : public WidgetDataSaveStrategy {
-public:
-    LineEditDataSaveStrategy(QPointer<QLineEdit> new_line_edit);
-    void loadData(QPointer<Settings> settings) override;
-    void saveData(QPointer<Settings> settings) override;
-
-private:
-    QPointer<QLineEdit> line_edit;
-};
+void ToolBarDataStrategy::saveData(QPointer<Settings> settings)
+{
+    settings.data()->setValue("MainWindow/ToolButtonStyle", tool_bar->toolButtonStyle());
+}

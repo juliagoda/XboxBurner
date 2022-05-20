@@ -24,14 +24,14 @@
 #include <QMainWindow>
 #include <QtGui>
 
-#include "applicationinformations.h"
-#include "settings.h"
 #include "backup.h"
+#include "constants/applicationinformations.h"
+#include "settings/settings.h"
 
 #ifdef Q_OS_WIN
-#include <stdio.h>
-#include <windows.h>
-#include <winioctl.h>
+  #include <stdio.h>
+  #include <windows.h>
+  #include <winioctl.h>
 #endif
 
 namespace Ui

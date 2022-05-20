@@ -24,18 +24,15 @@
 #include "xboxburner.h"
 #include "ui_xboxburner.h"
 
-#include "factories/dvdrwtoolstooldependencyfactory.h"
-#include "messages/boxmessages.h"
-#include "messages/messages.h"
-
 #include "burner/burnerprogressbarssetup.h"
 #include "burner/burnerstartstage.h"
 #include "burner/burningacceptancestage.h"
 #include "burner/currentburningverificationstage.h"
 #include "burner/pathsandspeedcontentverificationstage.h"
 #include "burner/truncateimagestartstage.h"
-
-#include <QScopedPointer>
+#include "constants/boxmessages.h"
+#include "constants/messages.h"
+#include "dependencies/dvdrwtoolstooldependencyfactory.h"
 
 #include <QAction>
 #include <QCompleter>
@@ -45,10 +42,12 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QRegularExpression>
+#include <QScopedPointer>
 #include <QtConcurrent>
 #include <QtGlobal>
 
-XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informations, QWidget* parent)
+XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informations,
+                       QWidget* parent)
     : QMainWindow(parent)
     , ui { new Ui::XBoxBurner }
     , backup { new Backup(createStructFromBurnerWidgets()) }
@@ -105,15 +104,14 @@ void XBoxBurner::on_push_button_open_image_path_clicked()
 {
     QString path = QDir::homePath();
 
-    if (!ui->lineedit_image_path->text().isEmpty()) {
+    if (!ui->lineedit_image_path->text().isEmpty())
         path = ui->lineedit_image_path->text().mid(0, ui->lineedit_image_path->text().lastIndexOf("/"));
-    }
 
     QString imagePath = QFileDialog::getOpenFileName(this, tr("Open dvd image"), path, tr("DVD images (*.iso *.img *.cdr)"));
 
-    if (!imagePath.isEmpty()) {
+    if (!imagePath.isEmpty())
+    {
         ui->lineedit_image_path->setText(imagePath);
-
         if (imagePath.contains("xgd3", Qt::CaseInsensitive)) {
             ui->combo_box_dvd_format->setCurrentIndex(1);
         }
@@ -122,9 +120,9 @@ void XBoxBurner::on_push_button_open_image_path_clicked()
 
 void XBoxBurner::on_push_button_check_clicked()
 {
-    if (!ui->lineedit_burner_path->text().isEmpty()) {
+    if (!ui->lineedit_burner_path->text().isEmpty())
+    {
         showStatusBarMessage(Messages::reading_info);
-
         checkMediaProcess = new QProcess();
 
         qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
@@ -132,7 +130,6 @@ void XBoxBurner::on_push_button_check_clicked()
         connect(checkMediaProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(getMediaInfo_finished(int, QProcess::ExitStatus)));
 
         mediaInfo.clear();
-
         checkMediaProcess->start(dvdrwmediainfo, QStringList() << ui->lineedit_burner_path->text().simplified());
     }
 }
@@ -273,7 +270,8 @@ void XBoxBurner::getMediaInfo_readyReadStandardOutput()
     mediaInfo.append(media_process_data.split("\n"));
 }
 
-void XBoxBurner::getMediaInfo_finished(const int exitCode, const QProcess::ExitStatus exitStatus)
+void XBoxBurner::getMediaInfo_finished(const int exitCode,
+                                       const QProcess::ExitStatus exitStatus)
 {
     QRegularExpression burner_line("INQUIRY:\\s*(.+)");
     QRegularExpression media_line("(?:MOUNTED MEDIA|MEDIA BOOK TYPE|MEDIA ID):\\s*(.+)");
@@ -365,7 +363,6 @@ QString XBoxBurner::calculatingImageMD5()
     QCryptographicHash hash(QCryptographicHash::Md5);
     QFile image(ui->lineedit_image_path->text().simplified());
     int blockCount = image.size() / blockSize;
-
     verifying = true;
 
     emit md5SumMaximum(blockCount);

@@ -20,16 +20,18 @@
 
 #include "widgetdatasavestrategy.h"
 
-#include <QToolBar>
+#include <QLineEdit>
+#include <QPointer>
 
 class Settings;
 
-class ToolBarDataStrategy : public WidgetDataSaveStrategy {
+class LineEditDataSaveStrategy : public WidgetDataSaveStrategy
+{
 public:
-    ToolBarDataStrategy(QPointer<QToolBar> new_tool_bar);
+    LineEditDataSaveStrategy(QPointer<QLineEdit> new_line_edit);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 
 private:
-    QPointer<QToolBar> tool_bar;
+    QPointer<QLineEdit> line_edit;
 };

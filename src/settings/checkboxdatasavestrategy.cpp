@@ -22,8 +22,7 @@
 
 CheckBoxDataSaveStrategy::CheckBoxDataSaveStrategy(QPointer<QCheckBox> new_checkbox)
     : checkbox { new_checkbox }
-{
-}
+{}
 
 void CheckBoxDataSaveStrategy::loadData(QPointer<Settings> settings)
 {

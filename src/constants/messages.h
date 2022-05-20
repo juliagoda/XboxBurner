@@ -16,21 +16,24 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#include "lineeditdatasavestrategy.h"
+#pragma once
 
-#include "settings.h"
+#include <QString>
 
-LineEditDataSaveStrategy::LineEditDataSaveStrategy(QPointer<QLineEdit> new_line_edit)
-    : line_edit { new_line_edit }
+class Messages
 {
-}
+public:
+    static const QString burnerMediaAvailability(const QString& burner_txt,
+                                                 const QStringList& media_txt_list);
+    static const QString burningErrorMessage(const QString& burn_process_error_message,
+                                             int exit_code,
+                                             int exit_status);
+    static const QString imageFromImagePath(const QString& image_path);
+    static const QString backupCreationDestination(const QString& image_path);
 
-void LineEditDataSaveStrategy::loadData(QPointer<Settings> settings)
-{
-    line_edit->setText(settings.data()->value(line_edit->accessibleName(), QVariant("")).toString());
-}
-
-void LineEditDataSaveStrategy::saveData(QPointer<Settings> settings)
-{
-    settings.data()->setValue(line_edit->accessibleName(), line_edit->text());
-}
+    static const QString reading_info;
+    static const QString burn_process_start_with_date;
+    static const QString backup_creation;
+    static const QString checksum_calculation_image;
+    static const QString checksum_calculation_dvd;
+};

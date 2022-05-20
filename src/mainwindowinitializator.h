@@ -18,11 +18,10 @@
 
 #pragma once
 
+#include "constants/applicationinformations.h"
+#include "dependencies/dvdrwtoolsdependencyfactory.h"
+#include "settings/widgetdatasavestrategy.h"
 #include "xboxburner.h"
-
-#include "applicationinformations.h"
-#include "factories/dvdrwtoolsdependencyfactory.h"
-#include "strategies/widgetdatasavestrategy.h"
 
 #include <QLineEdit>
 #include <QPointer>
@@ -32,7 +31,8 @@
 
 class ListSettingsWidget;
 
-class MainWindowInitializator : public XBoxBurner {
+class MainWindowInitializator : public XBoxBurner
+{
     Q_OBJECT
 
 public:

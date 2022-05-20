@@ -18,17 +18,16 @@
 
 #include "listsettingswidget.h"
 
-#include "strategies/checkboxdatasavestrategy.h"
-#include "strategies/comboboxdatasavestrategy.h"
-#include "strategies/lineeditdatasavestrategy.h"
-#include "strategies/mainwindowdatasavestrategy.h"
-#include "strategies/toolbardatastrategy.h"
-#include "strategies/widgetdatasavestrategy.h"
+#include "checkboxdatasavestrategy.h"
+#include "comboboxdatasavestrategy.h"
+#include "lineeditdatasavestrategy.h"
+#include "mainwindowdatasavestrategy.h"
+#include "toolbardatastrategy.h"
+#include "widgetdatasavestrategy.h"
 
 ListSettingsWidget::ListSettingsWidget()
     : list_widget_strategies { new QList<QSharedPointer<WidgetDataSaveStrategy>> }
-{
-}
+{}
 
 void ListSettingsWidget::addSettingStrategyCheckBox(QCheckBox* checkbox)
 {

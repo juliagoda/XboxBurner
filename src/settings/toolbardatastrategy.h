@@ -20,18 +20,17 @@
 
 #include "widgetdatasavestrategy.h"
 
-#include <QMainWindow>
-#include <QPointer>
-#include <QString>
+#include <QToolBar>
 
 class Settings;
 
-class MainWindowDataSaveStrategy : public WidgetDataSaveStrategy {
+class ToolBarDataStrategy : public WidgetDataSaveStrategy
+{
 public:
-    MainWindowDataSaveStrategy(QPointer<QMainWindow> new_main_window);
+    ToolBarDataStrategy(QPointer<QToolBar> new_tool_bar);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 
 private:
-    QPointer<QMainWindow> main_window;
+    QPointer<QToolBar> tool_bar;
 };

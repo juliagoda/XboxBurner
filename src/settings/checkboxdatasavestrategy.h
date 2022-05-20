@@ -20,18 +20,18 @@
 
 #include "widgetdatasavestrategy.h"
 
-#include <QComboBox>
+#include <QCheckBox>
 #include <QPointer>
-#include <QString>
 
 class Settings;
 
-class ComboBoxDataSaveStrategy : public WidgetDataSaveStrategy {
+class CheckBoxDataSaveStrategy : public WidgetDataSaveStrategy
+{
 public:
-    ComboBoxDataSaveStrategy(QPointer<QComboBox> new_combobox);
+    CheckBoxDataSaveStrategy(QPointer<QCheckBox> new_checkbox);
     void loadData(QPointer<Settings> settings) override;
     void saveData(QPointer<Settings> settings) override;
 
 private:
-    QPointer<QComboBox> combobox;
+    QPointer<QCheckBox> checkbox;
 };

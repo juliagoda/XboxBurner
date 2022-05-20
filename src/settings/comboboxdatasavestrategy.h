@@ -18,21 +18,20 @@
 
 #pragma once
 
-#include <QString>
+#include "widgetdatasavestrategy.h"
 
-class Messages {
+#include <QComboBox>
+#include <QPointer>
+
+class Settings;
+
+class ComboBoxDataSaveStrategy : public WidgetDataSaveStrategy
+{
 public:
-    static const QString burnerMediaAvailability(const QString& burner_txt,
-                                                 const QStringList& media_txt_list);
-    static const QString burningErrorMessage(const QString& burn_process_error_message,
-                                             int exit_code,
-                                             int exit_status);
-    static const QString imageFromImagePath(const QString& image_path);
-    static const QString backupCreationDestination(const QString& image_path);
+    ComboBoxDataSaveStrategy(QPointer<QComboBox> new_combobox);
+    void loadData(QPointer<Settings> settings) override;
+    void saveData(QPointer<Settings> settings) override;
 
-    static const QString reading_info;
-    static const QString burn_process_start_with_date;
-    static const QString backup_creation;
-    static const QString checksum_calculation_image;
-    static const QString checksum_calculation_dvd;
+private:
+    QPointer<QComboBox> combobox;
 };

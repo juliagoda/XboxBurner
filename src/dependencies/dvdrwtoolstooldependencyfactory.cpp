@@ -16,24 +16,39 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#include "currentburningverificationstage.h"
+#include "dvdrwtoolstooldependencyfactory.h"
 
-#include "constants/boxmessages.h"
+#include <QObject>
+#include <QProcess>
+#include <QStringList>
 
-#include <QMessageBox>
+DvdrwtoolsToolDependencyFactory::DvdrwtoolsToolDependencyFactory(const QString& new_tool_name)
+    : tool_name { new_tool_name }
+    , file { new QFile(getFileFullName(new_tool_name)) }
+    , version { getVersion(file->fileName()) }
 
-CurrentBurningVerificationStage::CurrentBurningVerificationStage(const BurnerWidgets& new_burner_widgets) :
-    BurnerStage(new_burner_widgets)
-{}
-
-bool CurrentBurningVerificationStage::handle()
 {
-    if (burning)
-    {
-        if (BoxMessages::cancelBurnProcessMessage(new QWidget) == QMessageBox::Ok)
-            burn_process->kill();
-        return false;
-    }
+}
 
-    return BurnerStage::handle();
+const QStringList DvdrwtoolsToolDependencyFactory::showToolDetectionInformations()
+{
+    if (toolExistsInSystem())
+        return QStringList() << QObject::tr("Info: %1 found in %2\n").arg(tool_name).arg(file.data()->fileName().mid(0, file.data()->fileName().lastIndexOf("/"))) << getToolVersion();
+
+    return QStringList() << QObject::tr("Error: %1 not found!").arg(tool_name);
+}
+
+bool DvdrwtoolsToolDependencyFactory::toolExistsInSystem()
+{
+    return file.data()->exists();
+}
+
+const QString& DvdrwtoolsToolDependencyFactory::getToolVersion()
+{
+    return version;
+}
+
+const QString DvdrwtoolsToolDependencyFactory::getFileNamePath()
+{
+    return file.data()->fileName();
 }

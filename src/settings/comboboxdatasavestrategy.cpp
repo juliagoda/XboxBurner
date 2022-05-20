@@ -1,4 +1,3 @@
-#pragma once
 /***************************************************************************
  *   Copyright (C) 2022 Jagoda "juliagoda" Górska                          *
  *   juliagoda.pl@protonmail.com                                           *
@@ -17,29 +16,20 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#include "strategies/widgetdatasavestrategy.h"
+#include "comboboxdatasavestrategy.h"
 
-#include "applicationinformations.h"
+#include "settings.h"
 
-#include <QList>
-#include <QObject>
-#include <QPointer>
-#include <QSettings>
-#include <QSharedPointer>
+ComboBoxDataSaveStrategy::ComboBoxDataSaveStrategy(QPointer<QComboBox> new_combobox)
+    : combobox { new_combobox }
+{}
 
-class ListSettingsWidget;
-
-class Settings : public QSettings
+void ComboBoxDataSaveStrategy::loadData(QPointer<Settings> settings)
 {
-    Q_OBJECT
+    combobox->setCurrentIndex(settings.data()->value(combobox->accessibleName(), QVariant(0)).toInt());
+}
 
-public:
-    explicit Settings(const QSharedPointer<ListSettingsWidget> new_widgets_list,
-                      const ApplicationInformations& applications_informations,
-                      QObject* parent = nullptr);
-    void loadSettings();
-    void saveSettings();
-
-private:
-    const QSharedPointer<ListSettingsWidget> widgets_list;
-};
+void ComboBoxDataSaveStrategy::saveData(QPointer<Settings> settings)
+{
+    settings.data()->setValue(combobox->accessibleName(), combobox.data()->currentIndex());
+}

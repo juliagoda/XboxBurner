@@ -16,21 +16,41 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#include "comboboxdatasavestrategy.h"
-
 #include "settings.h"
 
-ComboBoxDataSaveStrategy::ComboBoxDataSaveStrategy(QPointer<QComboBox> new_combobox)
-    : combobox { new_combobox }
+#include "listsettingswidget.h"
+
+Settings::Settings(QSharedPointer<ListSettingsWidget> new_widgets_list,
+                   const ApplicationInformations& applications_informations,
+                   QObject* parent) :
+    QSettings { applications_informations.getApplicationStorageFormat(),
+                QSettings::UserScope,
+                applications_informations.getOrganizationName(),
+                applications_informations.getApplicationName().toLower(),
+                parent }
+    , widgets_list { new_widgets_list }
+{}
+
+void Settings::loadSettings()
 {
+    QListIterator<QSharedPointer<WidgetDataSaveStrategy>> widgets_list_iterator(*widgets_list.data()->getListWidgetStrategies());
+
+    while (widgets_list_iterator.hasNext())
+    {
+        auto widget_pointer = widgets_list_iterator.next();
+        auto widget = widget_pointer.data();
+        widget->loadData(this);
+    }
 }
 
-void ComboBoxDataSaveStrategy::loadData(QPointer<Settings> settings)
+void Settings::saveSettings()
 {
-    combobox->setCurrentIndex(settings.data()->value(combobox->accessibleName(), QVariant(0)).toInt());
-}
+    QListIterator<QSharedPointer<WidgetDataSaveStrategy>> widgets_list_iterator(*widgets_list.data()->getListWidgetStrategies());
 
-void ComboBoxDataSaveStrategy::saveData(QPointer<Settings> settings)
-{
-    settings.data()->setValue(combobox->accessibleName(), combobox.data()->currentIndex());
+    while (widgets_list_iterator.hasNext())
+    {
+        auto widget_pointer = widgets_list_iterator.next();
+        auto widget = widget_pointer.data();
+        widget->saveData(this);
+    }
 }

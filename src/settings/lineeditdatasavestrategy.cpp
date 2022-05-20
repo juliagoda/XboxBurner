@@ -16,21 +16,20 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "lineeditdatasavestrategy.h"
 
-#include "widgetdatasavestrategy.h"
+#include "settings.h"
 
-#include <QCheckBox>
-#include <QPointer>
+LineEditDataSaveStrategy::LineEditDataSaveStrategy(QPointer<QLineEdit> new_line_edit)
+    : line_edit { new_line_edit }
+{}
 
-class Settings;
+void LineEditDataSaveStrategy::loadData(QPointer<Settings> settings)
+{
+    line_edit->setText(settings.data()->value(line_edit->accessibleName(), QVariant("")).toString());
+}
 
-class CheckBoxDataSaveStrategy : public WidgetDataSaveStrategy {
-public:
-    CheckBoxDataSaveStrategy(QPointer<QCheckBox> new_checkbox);
-    void loadData(QPointer<Settings> settings) override;
-    void saveData(QPointer<Settings> settings) override;
-
-private:
-    QPointer<QCheckBox> checkbox;
-};
+void LineEditDataSaveStrategy::saveData(QPointer<Settings> settings)
+{
+    settings.data()->setValue(line_edit->accessibleName(), line_edit->text());
+}

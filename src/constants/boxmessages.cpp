@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "boxmessages.h"
+
 #include "applicationinformations.h"
 
 #include <QMessageBox>
