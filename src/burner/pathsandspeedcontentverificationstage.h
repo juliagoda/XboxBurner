@@ -23,6 +23,6 @@
 class PathsAndSpeedContentVerificationStage : public BurnerStage
 {
 public:
-    PathsAndSpeedContentVerificationStage(const BurnerWidgets& new_burner_widgets);
+    PathsAndSpeedContentVerificationStage(QSharedPointer<BurnerWidgets> new_burner_widgets);
     bool handle() override;
 };

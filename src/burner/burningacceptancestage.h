@@ -24,6 +24,6 @@
 class BurningAcceptanceStage : public BurnerStage
 {
 public:
-    BurningAcceptanceStage(const BurnerWidgets& new_burner_widgets);
+    BurningAcceptanceStage(QSharedPointer<BurnerWidgets> new_burner_widgets);
     bool handle() override;
 };

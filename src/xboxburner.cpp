@@ -64,25 +64,25 @@ XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informati
     ui->setupUi(this);
 }
 
-BurnerWidgets XBoxBurner::createStructFromBurnerWidgets()
+QSharedPointer<BurnerWidgets> XBoxBurner::createStructFromBurnerWidgets()
 {
-    BurnerWidgets burner_widgets;
-    burner_widgets.combo_box_dvd_format = ui->combo_box_dvd_format;
-    burner_widgets.check_box_dao_mode = ui->check_box_dao_mode;
-    burner_widgets.check_box_dvd_compat = ui->check_box_dvd_compat;
-    burner_widgets.check_box_dry_run = ui->check_box_dry_run;
-    burner_widgets.combo_box_write_speed = ui->combo_box_write_speed;
-    burner_widgets.lineedit_burner_path = ui->lineedit_burner_path;
-    burner_widgets.lineedit_image_path = ui->lineedit_image_path;
-    burner_widgets.plain_text_edit_with_logs = ui->plain_text_edit_with_logs;
-    burner_widgets.toolbar = ui->toolBar;
-    burner_widgets.progress_bar_burn = ui->progress_bar_burn;
-    burner_widgets.progress_bar_ring_buffer_unit = ui->progress_bar_ring_buffer_unit;
-    burner_widgets.progress_bar_unit_buffer_unit = ui->progress_bar_unit_buffer_unit;
-    burner_widgets.backup_future_watcher = &backup_future_watcher;
-    burner_widgets.check_box_backup_creation = ui->check_box_backup_creation;
-    burner_widgets.status_bar = ui->statusBar;
-    return burner_widgets;
+    QSharedPointer<BurnerWidgets> struct_burner_widgets = QSharedPointer<BurnerWidgets>(new BurnerWidgets);
+    struct_burner_widgets.data()->combo_box_dvd_format = ui->combo_box_dvd_format;
+    struct_burner_widgets.data()->check_box_dao_mode = ui->check_box_dao_mode;
+    struct_burner_widgets.data()->check_box_dvd_compat = ui->check_box_dvd_compat;
+    struct_burner_widgets.data()->check_box_dry_run = ui->check_box_dry_run;
+    struct_burner_widgets.data()->combo_box_write_speed = ui->combo_box_write_speed;
+    struct_burner_widgets.data()->lineedit_burner_path = ui->lineedit_burner_path;
+    struct_burner_widgets.data()->lineedit_image_path = ui->lineedit_image_path;
+    struct_burner_widgets.data()->plain_text_edit_with_logs = ui->plain_text_edit_with_logs;
+    struct_burner_widgets.data()->toolbar = ui->toolBar;
+    struct_burner_widgets.data()->progress_bar_burn = ui->progress_bar_burn;
+    struct_burner_widgets.data()->progress_bar_ring_buffer_unit = ui->progress_bar_ring_buffer_unit;
+    struct_burner_widgets.data()->progress_bar_unit_buffer_unit = ui->progress_bar_unit_buffer_unit;
+    struct_burner_widgets.data()->backup_future_watcher = &backup_future_watcher;
+    struct_burner_widgets.data()->check_box_backup_creation = ui->check_box_backup_creation;
+    struct_burner_widgets.data()->status_bar = ui->statusBar;
+    return struct_burner_widgets;
 }
 
 void XBoxBurner::initializeSettingsSave()

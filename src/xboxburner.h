@@ -60,7 +60,7 @@ protected:
     QFutureWatcher<QString> image_future_watcher, dvd_future_watcher;
     QPointer<Settings> settings;
     QPointer<Backup> backup;
-    BurnerWidgets burner_widgets;
+    QSharedPointer<BurnerWidgets> burner_widgets;
 
 protected slots:
     void burn_triggered();
@@ -93,7 +93,7 @@ protected slots:
     void toolBar_toolButtonTextUnderIcon();
 
 private:
-    BurnerWidgets createStructFromBurnerWidgets();
+    QSharedPointer<BurnerWidgets> createStructFromBurnerWidgets();
     void initializeSettingsSave();
     void verify();
     QString calculatingImageMD5();

@@ -25,16 +25,14 @@
 #include <QString>
 #include <QFile>
 
-Backup::Backup(const BurnerWidgets& new_burner_widgets) :
+Backup::Backup(QSharedPointer<BurnerWidgets> new_burner_widgets) :
     burner_widgets(new_burner_widgets),
-    burner_progress_bars_setup({new_burner_widgets.progress_bar_burn,
-                               new_burner_widgets.progress_bar_ring_buffer_unit,
-                               new_burner_widgets.progress_bar_unit_buffer_unit})
+    burner_progress_bars_setup(QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(createStructFromProgressBarsWidgets(new_burner_widgets))))
 {}
 
 bool Backup::create()
 {
-    QString file_name = burner_widgets.lineedit_image_path->text().simplified();
+    QString file_name = burner_widgets.data()->lineedit_image_path->text().simplified();
     QString source = file_name;
     QString destination = Messages::backupCreationDestination(file_name);
 
@@ -43,26 +41,26 @@ bool Backup::create()
 
 void Backup::log()
 {
-    bool result = burner_widgets.backup_future_watcher->result();
-    burner_progress_bars_setup.restoreRingAndUnitProgressBarsValues();
+    bool result = burner_widgets.data()->backup_future_watcher->result();
+    burner_progress_bars_setup.data()->restoreRingAndUnitProgressBarsValues();
 
     if (result)
     {
-        burner_widgets.status_bar->showMessage(QObject::tr("Creation backup of game image successfully!"), 0);
-        burner_widgets.plain_text_edit_with_logs->appendPlainText("Creation backup of game image successfully!");
+        burner_widgets.data()->status_bar->showMessage(QObject::tr("Creation backup of game image successfully!"), 0);
+        burner_widgets.data()->plain_text_edit_with_logs->appendPlainText("Creation backup of game image successfully!");
         resizeImage();
     }
     else
     {
-        burner_widgets.status_bar->showMessage(QObject::tr("Creation backup of game image failed!"), 0);
-        burner_widgets.plain_text_edit_with_logs->appendPlainText("Creation backup of game image failed! Burn process stopped!");
+        burner_widgets.data()->status_bar->showMessage(QObject::tr("Creation backup of game image failed!"), 0);
+        burner_widgets.data()->plain_text_edit_with_logs->appendPlainText("Creation backup of game image failed! Burn process stopped!");
     }
 }
 
 void Backup::resizeImage()
 {
     qint64 size = Q_INT64_C(8547991552);
-    QFile file(burner_widgets.lineedit_image_path->text().simplified());
+    QFile file(burner_widgets.data()->lineedit_image_path->text().simplified());
 
     if (file.resize(size))
     {
@@ -71,7 +69,16 @@ void Backup::resizeImage()
     }
     else
     {
-        burner_widgets.status_bar->showMessage(QObject::tr("Resize game image failed!"), 0);
-        burner_widgets.plain_text_edit_with_logs->appendPlainText("Resize game image failed! Burn process stopped!");
+        burner_widgets.data()->status_bar->showMessage(QObject::tr("Resize game image failed!"), 0);
+        burner_widgets.data()->plain_text_edit_with_logs->appendPlainText("Resize game image failed! Burn process stopped!");
     }
+}
+
+QSharedPointer<BurnerProgressBarsWidgets> Backup::createStructFromProgressBarsWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets)
+{
+    QSharedPointer<BurnerProgressBarsWidgets> progress_bar_widgets = QSharedPointer<BurnerProgressBarsWidgets>(new BurnerProgressBarsWidgets);
+    progress_bar_widgets.data()->progress_bar_burn = new_burner_widgets.data()->progress_bar_burn;
+    progress_bar_widgets.data()->progress_bar_ring_buffer_unit = new_burner_widgets.data()->progress_bar_ring_buffer_unit;
+    progress_bar_widgets.data()->progress_bar_unit_buffer_unit = new_burner_widgets.data()->progress_bar_unit_buffer_unit;
+    return progress_bar_widgets;
 }

@@ -26,7 +26,7 @@ class Backup : public QObject
     Q_OBJECT
 
 public:
-    explicit Backup(const BurnerWidgets& new_burner_widgets);
+    explicit Backup(QSharedPointer<BurnerWidgets> new_burner_widgets);
 
 public slots:
     bool create();
@@ -34,7 +34,8 @@ public slots:
 
 private:
     void resizeImage();
+    QSharedPointer<BurnerProgressBarsWidgets> createStructFromProgressBarsWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets);
 
-    BurnerWidgets burner_widgets;
-    BurnerProgressBarsSetup burner_progress_bars_setup;
+    QSharedPointer<BurnerWidgets> burner_widgets;
+    QSharedPointer<BurnerProgressBarsSetup> burner_progress_bars_setup;
 };

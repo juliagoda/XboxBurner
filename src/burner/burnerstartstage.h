@@ -23,7 +23,7 @@
 class BurnerStartStage : public BurnerStage
 {
 public:
-    BurnerStartStage(const BurnerWidgets& new_burner_widgets);
+    BurnerStartStage(QSharedPointer<BurnerWidgets> new_burner_widgets);
     bool handle() override;
 
 private slots:

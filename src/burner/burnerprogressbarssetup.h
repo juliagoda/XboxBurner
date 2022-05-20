@@ -23,7 +23,7 @@
 class BurnerProgressBarsSetup
 {
 public:
-    BurnerProgressBarsSetup(const BurnerProgressBarsWidgets& new_burner_progress_bars_widgets);
+    BurnerProgressBarsSetup(QSharedPointer<BurnerProgressBarsWidgets> new_burner_progress_bars_widgets);
     void setValuesProgressBarsToZero();
     void resetBurnerProgressBarValues();
     void resetRingAndUnitProgressBarsValues();
@@ -31,5 +31,5 @@ public:
     void restoreRingAndUnitProgressBarsValues();
 
 private:
-    BurnerProgressBarsWidgets burner_progress_bars_widgets;
+    QSharedPointer<BurnerProgressBarsWidgets> burner_progress_bars_widgets;
 };

@@ -22,7 +22,7 @@
 
 #include <QMessageBox>
 
-CurrentBurningVerificationStage::CurrentBurningVerificationStage(const BurnerWidgets& new_burner_widgets) :
+CurrentBurningVerificationStage::CurrentBurningVerificationStage(QSharedPointer<BurnerWidgets> new_burner_widgets) :
     BurnerStage(new_burner_widgets)
 {}
 

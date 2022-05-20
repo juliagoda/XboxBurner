@@ -23,6 +23,6 @@
 class CurrentBurningVerificationStage : public BurnerStage
 {
 public:
-    CurrentBurningVerificationStage(const BurnerWidgets& new_burner_widgets);
+    CurrentBurningVerificationStage(QSharedPointer<BurnerWidgets> new_burner_widgets);
     bool handle() override;
 };
