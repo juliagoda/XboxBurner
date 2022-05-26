@@ -27,7 +27,7 @@
 
 Backup::Backup(QSharedPointer<BurnerWidgets> new_burner_widgets) :
     burner_widgets(new_burner_widgets),
-    burner_progress_bars_setup(QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(createStructFromProgressBarsWidgets(new_burner_widgets))))
+    burner_progress_bars_setup(QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(createStructFromBurnerWidgets(new_burner_widgets))))
 {}
 
 bool Backup::create()
@@ -74,7 +74,7 @@ void Backup::resizeImage()
     }
 }
 
-QSharedPointer<BurnerProgressBarsWidgets> Backup::createStructFromProgressBarsWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets)
+QSharedPointer<BurnerProgressBarsWidgets> Backup::createStructFromBurnerWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets)
 {
     QSharedPointer<BurnerProgressBarsWidgets> progress_bar_widgets = QSharedPointer<BurnerProgressBarsWidgets>(new BurnerProgressBarsWidgets);
     progress_bar_widgets.data()->progress_bar_burn = new_burner_widgets.data()->progress_bar_burn;

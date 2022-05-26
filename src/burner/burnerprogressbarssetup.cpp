@@ -22,6 +22,10 @@ BurnerProgressBarsSetup::BurnerProgressBarsSetup(QSharedPointer<BurnerProgressBa
     burner_progress_bars_widgets(new_burner_progress_bars_widgets)
 {}
 
+BurnerProgressBarsSetup::BurnerProgressBarsSetup(QSharedPointer<BurnerWidgets> new_burner_widgets) :
+    burner_progress_bars_widgets{createStructFromBurnerWidgets(new_burner_widgets)}
+{}
+
 void BurnerProgressBarsSetup::setValuesProgressBarsToZero()
 {
     burner_progress_bars_widgets.data()->progress_bar_ring_buffer_unit->setValue(0);
@@ -63,4 +67,13 @@ void BurnerProgressBarsSetup::restoreRingAndUnitProgressBarsValues()
     burner_progress_bars_widgets.data()->progress_bar_unit_buffer_unit->setMinimum(0);
     burner_progress_bars_widgets.data()->progress_bar_unit_buffer_unit->setMaximum(100);
     burner_progress_bars_widgets.data()->progress_bar_unit_buffer_unit->setValue(0);
+}
+
+QSharedPointer<BurnerProgressBarsWidgets> BurnerProgressBarsSetup::createStructFromBurnerWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets)
+{
+    QSharedPointer<BurnerProgressBarsWidgets> progress_bar_widgets = QSharedPointer<BurnerProgressBarsWidgets>(new BurnerProgressBarsWidgets);
+    progress_bar_widgets.data()->progress_bar_burn = new_burner_widgets.data()->progress_bar_burn;
+    progress_bar_widgets.data()->progress_bar_ring_buffer_unit = new_burner_widgets.data()->progress_bar_ring_buffer_unit;
+    progress_bar_widgets.data()->progress_bar_unit_buffer_unit = new_burner_widgets.data()->progress_bar_unit_buffer_unit;
+    return progress_bar_widgets;
 }

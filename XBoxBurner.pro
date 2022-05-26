@@ -35,6 +35,12 @@ SOURCES += src/backup.cpp \
     src/settings/mainwindowdatasavestrategy.cpp \
     src/settings/toolbardatastrategy.cpp \
     src/settings/settings.cpp \
+    src/verification/cancelstate.cpp \
+    src/verification/dvdverificationstate.cpp \
+    src/verification/imageverificationstate.cpp \
+    src/verification/startstate.cpp \
+    src/verification/verification.cpp \
+    src/verification/verificationstate.cpp \
     src/xboxburner.cpp
 
 HEADERS   += src/backup.h \
@@ -62,6 +68,12 @@ HEADERS   += src/backup.h \
     src/settings/settings.h \
     src/settings/toolbardatastrategy.h \
     src/settings/widgetdatasavestrategy.h \
+    src/verification/cancelstate.h \
+    src/verification/dvdverificationstate.h \
+    src/verification/imageverificationstate.h \
+    src/verification/startstate.h \
+    src/verification/verification.h \
+    src/verification/verificationstate.h \
     src/xboxburner.h
 
 FORMS     += resources/ui/xboxburner.ui

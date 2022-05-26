@@ -33,6 +33,7 @@ struct BurnerWidgets
     QCheckBox* check_box_dao_mode = nullptr;
     QCheckBox* check_box_dvd_compat = nullptr;
     QCheckBox* check_box_dry_run = nullptr;
+    QCheckBox* check_box_data_verification = nullptr;
     QComboBox* combo_box_write_speed = nullptr;
     QLineEdit* lineedit_burner_path = nullptr;
     QLineEdit* lineedit_image_path = nullptr;
@@ -44,8 +45,11 @@ struct BurnerWidgets
     QProgressBar* progress_bar_unit_buffer_unit = nullptr;
 
     QFutureWatcher<bool>* backup_future_watcher = nullptr;
+    QFutureWatcher<QString>* image_future_watcher = nullptr;
+    QFutureWatcher<QString>* dvd_future_watcher = nullptr;
     QCheckBox* check_box_backup_creation = nullptr;
     QStatusBar* status_bar = nullptr;
+    QFrame* status_frame = nullptr;
 };
 
 struct BurnerProgressBarsWidgets

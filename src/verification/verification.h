@@ -18,21 +18,39 @@
 
 #pragma once
 
-#include "burnerwidgets.h"
+#include "burner/burnerstage.h"
+#include "verificationstate.h"
 
-class BurnerProgressBarsSetup
+#include <QSharedPointer>
+
+class Verification : public QObject
 {
+    Q_OBJECT
+
 public:
-    BurnerProgressBarsSetup(QSharedPointer<BurnerProgressBarsWidgets> new_burner_progress_bars_widgets);
-    BurnerProgressBarsSetup(QSharedPointer<BurnerWidgets> new_burner_widgets);
-    void setValuesProgressBarsToZero();
-    void resetBurnerProgressBarValues();
-    void resetRingAndUnitProgressBarsValues();
-    void restoreBurnerProgressBarValues();
-    void restoreRingAndUnitProgressBarsValues();
+    Verification(QSharedPointer<BurnerWidgets> new_burner_widgets);
+    void trigger();
+    void prepareWidgetsBeforeCalculations();
+    void calculateMd5();
+    void calculateMd5Hash();
+    bool notEmptyPaths();
+    bool verificationChecked();
+
+    QSharedPointer<VerificationState> getState() const;
+    void changeState(QSharedPointer<VerificationState> state);
+    void calculateMD5HashForProgressBar(qint64 hash_current_block);
+    void setMaximalPossibleMD5HashValue(qint64 maximal_value);
+
+    QSharedPointer<BurnerWidgets> getBurnerWidgets() const;
+    int getBlockSize() const;
+    QString getImageChecksum() const;
+
+    void updateMd5Checksum(const QString& new_image_checksum);
 
 private:
-    QSharedPointer<BurnerProgressBarsWidgets> createStructFromBurnerWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets);
-
-    QSharedPointer<BurnerProgressBarsWidgets> burner_progress_bars_widgets;
+    QSharedPointer<BurnerWidgets> burner_widgets;
+    QSharedPointer<VerificationState> verification_state;
+    QString image_checksum;
+    int block_size;
+    int verification_progress_max;
 };

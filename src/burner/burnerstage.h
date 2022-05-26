@@ -34,7 +34,7 @@ public:
         burner_widgets{new_burner_widgets},
         burner_progress_bars_setup{
             QSharedPointer<BurnerProgressBarsSetup>(
-            new BurnerProgressBarsSetup(createStructFromProgressBarsWidgets(new_burner_widgets)))},
+            new BurnerProgressBarsSetup(new_burner_widgets))},
         next_stage{nullptr},
         burn_process{nullptr},
         burning{false}
@@ -60,14 +60,4 @@ protected:
     BurnerStage* next_stage;
     QProcess* burn_process;
     bool burning;
-
-private:
-    QSharedPointer<BurnerProgressBarsWidgets> createStructFromProgressBarsWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets)
-    {
-        QSharedPointer<BurnerProgressBarsWidgets> progress_bar_widgets = QSharedPointer<BurnerProgressBarsWidgets>(new BurnerProgressBarsWidgets);
-        progress_bar_widgets.data()->progress_bar_burn = new_burner_widgets.data()->progress_bar_burn;
-        progress_bar_widgets.data()->progress_bar_ring_buffer_unit = new_burner_widgets.data()->progress_bar_ring_buffer_unit;
-        progress_bar_widgets.data()->progress_bar_unit_buffer_unit = new_burner_widgets.data()->progress_bar_unit_buffer_unit;
-        return progress_bar_widgets;
-    }
 };

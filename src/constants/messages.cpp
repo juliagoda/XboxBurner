@@ -54,3 +54,11 @@ const QString Messages::backup_creation = QObject::tr("Creating backup of game i
 const QString Messages::checksum_calculation_image = QObject::tr("Calculating checksum of image...");
 
 const QString Messages::checksum_calculation_dvd = QObject::tr("Calculating checksum of DVD...");
+
+const QString Messages::checksum_calculation_image_fail = QObject::tr("Calculation of image checksum failed!");
+
+const QString Messages::checksum_calculation_dvd_fail = QObject::tr("Calculation of dvd checksum failed!");
+
+const QString Messages::checksum_with_success = QObject::tr("Success!");
+
+const QString Messages::checksum_fail = QObject::tr("Verification failed!");

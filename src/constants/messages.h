@@ -36,4 +36,8 @@ public:
     static const QString backup_creation;
     static const QString checksum_calculation_image;
     static const QString checksum_calculation_dvd;
+    static const QString checksum_calculation_image_fail;
+    static const QString checksum_calculation_dvd_fail;
+    static const QString checksum_with_success;
+    static const QString checksum_fail;
 };

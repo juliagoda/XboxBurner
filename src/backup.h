@@ -34,7 +34,7 @@ public slots:
 
 private:
     void resizeImage();
-    QSharedPointer<BurnerProgressBarsWidgets> createStructFromProgressBarsWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets);
+    QSharedPointer<BurnerProgressBarsWidgets> createStructFromBurnerWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets);
 
     QSharedPointer<BurnerWidgets> burner_widgets;
     QSharedPointer<BurnerProgressBarsSetup> burner_progress_bars_setup;

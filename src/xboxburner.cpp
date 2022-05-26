@@ -71,6 +71,7 @@ QSharedPointer<BurnerWidgets> XBoxBurner::createStructFromBurnerWidgets()
     struct_burner_widgets.data()->check_box_dao_mode = ui->check_box_dao_mode;
     struct_burner_widgets.data()->check_box_dvd_compat = ui->check_box_dvd_compat;
     struct_burner_widgets.data()->check_box_dry_run = ui->check_box_dry_run;
+    struct_burner_widgets.data()->check_box_data_verification = ui->check_box_data_verification;
     struct_burner_widgets.data()->combo_box_write_speed = ui->combo_box_write_speed;
     struct_burner_widgets.data()->lineedit_burner_path = ui->lineedit_burner_path;
     struct_burner_widgets.data()->lineedit_image_path = ui->lineedit_image_path;
@@ -80,8 +81,11 @@ QSharedPointer<BurnerWidgets> XBoxBurner::createStructFromBurnerWidgets()
     struct_burner_widgets.data()->progress_bar_ring_buffer_unit = ui->progress_bar_ring_buffer_unit;
     struct_burner_widgets.data()->progress_bar_unit_buffer_unit = ui->progress_bar_unit_buffer_unit;
     struct_burner_widgets.data()->backup_future_watcher = &backup_future_watcher;
+    struct_burner_widgets.data()->image_future_watcher = &image_future_watcher;
+    struct_burner_widgets.data()->dvd_future_watcher = &dvd_future_watcher;
     struct_burner_widgets.data()->check_box_backup_creation = ui->check_box_backup_creation;
     struct_burner_widgets.data()->status_bar = ui->statusBar;
+    struct_burner_widgets.data()->status_frame = ui->frame_1;
     return struct_burner_widgets;
 }
 
@@ -226,7 +230,7 @@ void XBoxBurner::on_push_button_logs_reset_clicked()
 
 void XBoxBurner::on_combo_box_dvd_format_currentIndexChanged(int index)
 {
-    QString name;
+    QString name = QString();
 
     switch (index)
     {
