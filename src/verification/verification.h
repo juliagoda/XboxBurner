@@ -30,6 +30,7 @@ class Verification : public QObject
 public:
     Verification(QSharedPointer<BurnerWidgets> new_burner_widgets);
     void trigger();
+    void cancel();
     void prepareWidgetsBeforeCalculations();
     void calculateMd5();
     void calculateMd5Hash();
@@ -38,6 +39,7 @@ public:
 
     QSharedPointer<VerificationState> getState() const;
     void changeState(QSharedPointer<VerificationState> state);
+    VerificationState::CurrentState getCurrentState() const;
     void calculateMD5HashForProgressBar(qint64 hash_current_block);
     void setMaximalPossibleMD5HashValue(qint64 maximal_value);
 

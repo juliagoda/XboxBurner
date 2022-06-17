@@ -26,29 +26,34 @@ CancelState::CancelState(Verification* new_verification) :
     VerificationState(new_verification)
 {}
 
+VerificationState::CurrentState CancelState::getCurrentState() const
+{
+   return VerificationState::CurrentState::Cancelled;
+}
+
 void CancelState::onTrigger()
 {
     verification->changeState(QSharedPointer<StartState>(new StartState(verification)));
     verification->trigger();
 }
 
+void CancelState::onCancel()
+{
+   showCancelMessage(QObject::tr("It's already cancelled!"));
+}
+
 void CancelState::onPrepareWidgetsBeforeCalculations()
 {
-   /* burner_widgets.data()->status_bar->showMessage(Messages::checksum_calculation_image, 0);
-    burner_widgets.data()->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_image);
-    burner_widgets.data()->toolbar->actions().at(4)->setIcon(QIcon(":/images/cancel.png"));
-    burner_widgets.data()->toolbar->actions().at(4)->setText(QObject::tr("&Start again"));
-
-    auto burner_progress_bars_setup = QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(burner_widgets));
-    burner_progress_bars_setup.data()->restoreRingAndUnitProgressBarsValues();*/
+    showCancelMessage(QObject::tr("Widgets cannot be prepared. Verification cancelled"));
 }
 
 QString CancelState::onCalculateMd5()
 {
-
+    showCancelMessage(QObject::tr("Md5 hash cannot be calculated. Verification cancelled"));
+    return QString();
 }
 
 void CancelState::onCalculateMd5Hash()
 {
-
+    showCancelMessage(QObject::tr("Md5 hash calculation cannot be finished. Verification cancelled"));
 }

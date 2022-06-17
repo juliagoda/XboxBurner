@@ -28,7 +28,9 @@
 Backup::Backup(QSharedPointer<BurnerWidgets> new_burner_widgets) :
     burner_widgets(new_burner_widgets),
     burner_progress_bars_setup(QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(createStructFromBurnerWidgets(new_burner_widgets))))
-{}
+{
+    QObject::connect(burner_widgets.data()->backup_future_watcher, &QFutureWatcher<bool>::finished, this, &Backup::log);
+}
 
 bool Backup::create()
 {

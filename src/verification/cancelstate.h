@@ -24,7 +24,9 @@ class CancelState : public VerificationState
 {
 public:
     CancelState(Verification* new_verification);
+    CurrentState getCurrentState() const override;
     void onTrigger() override;
+    void onCancel() override;
     void onPrepareWidgetsBeforeCalculations() override;
     QString onCalculateMd5() override;
     void onCalculateMd5Hash() override;

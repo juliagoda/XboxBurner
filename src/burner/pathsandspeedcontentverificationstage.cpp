@@ -27,8 +27,8 @@ PathsAndSpeedContentVerificationStage::PathsAndSpeedContentVerificationStage(QSh
 bool PathsAndSpeedContentVerificationStage::handle()
 {
     if (burner_widgets.data()->lineedit_image_path->text().isEmpty() ||
-        burner_widgets.data()->lineedit_burner_path->text().isEmpty() ||
-        burner_widgets.data()->combo_box_write_speed->currentText().isEmpty())
+            burner_widgets.data()->lineedit_burner_path->text().isEmpty() ||
+            burner_widgets.data()->combo_box_write_speed->currentText().isEmpty())
         return false;
 
     return BurnerStage::handle();

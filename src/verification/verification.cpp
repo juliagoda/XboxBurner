@@ -18,6 +18,7 @@
 
 #include "verification.h"
 #include "startstate.h"
+#include "cancelstate.h"
 #include "imageverificationstate.h"
 #include "dvdverificationstate.h"
 #include "constants/boxmessages.h"
@@ -37,6 +38,11 @@ Verification::Verification(QSharedPointer<BurnerWidgets> new_burner_widgets) :
 void Verification::trigger()
 {
     verification_state->onTrigger();
+}
+
+void Verification::cancel()
+{
+    verification_state->onCancel();
 }
 
 void Verification::prepareWidgetsBeforeCalculations()
@@ -73,6 +79,11 @@ QSharedPointer<VerificationState> Verification::getState() const
 void Verification::changeState(QSharedPointer<VerificationState> state)
 {
     verification_state = state;
+}
+
+VerificationState::CurrentState Verification::getCurrentState() const
+{
+    return verification_state->getCurrentState();
 }
 
 void Verification::calculateMD5HashForProgressBar(qint64 hash_current_block)

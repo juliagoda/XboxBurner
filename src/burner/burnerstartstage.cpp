@@ -190,6 +190,5 @@ void BurnerStartStage::burnProcess_finished(const int exitCode, const QProcess::
     burning = false;
     delete burn_process;
 
-   // if (ui->check_box_data_verification->isChecked())
-   //     verify();
+    emit finishedBurning();
 }

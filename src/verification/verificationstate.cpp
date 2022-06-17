@@ -20,10 +20,16 @@
 #include "verification.h"
 
 VerificationState::VerificationState(Verification* new_verification) :
-    verification(new_verification)
+    verification(new_verification),
+    burner_progress_bars_setup{ QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(verification->getBurnerWidgets())) }
 {}
 
-const QString VerificationState::getStateName()
+void VerificationState::showCancelMessage(const QString &message)
 {
-    return typeid(*this).name();
+    verification->getBurnerWidgets()->status_bar->showMessage(message, 0);
+    verification->getBurnerWidgets()->plain_text_edit_with_logs->appendPlainText(message);
+    verification->getBurnerWidgets()->toolbar->actions().at(4)->setIcon(QIcon(":/images/start.png"));
+    verification->getBurnerWidgets()->toolbar->actions().at(4)->setText(QObject::tr("&Start again"));
+
+    burner_progress_bars_setup.data()->resetRingAndUnitProgressBarsValues();
 }

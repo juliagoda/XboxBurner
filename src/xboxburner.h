@@ -27,6 +27,8 @@
 #include "backup.h"
 #include "constants/applicationinformations.h"
 #include "settings/settings.h"
+#include "verification/verification.h"
+#include "burner/currentburningverificationstage.h"
 
 #ifdef Q_OS_WIN
   #include <stdio.h>
@@ -82,11 +84,6 @@ protected slots:
     void getMediaInfo_finished(const int exitCode,
                                const QProcess::ExitStatus exitStatus);
 
-    void setMaximalPossibleMD5HashValue(qint64 maximal_value);
-    void calculateMD5HashForProgressBar(qint64 value);
-    void calculateMD5HashOfImage();
-    void calculateMD5HashOfDVD();
-
     void toolBar_toolButtonIconOnly();
     void toolBar_toolButtonTextOnly();
     void toolBar_toolButtonTextBesideIcon();
@@ -94,22 +91,15 @@ protected slots:
 
 private:
     QSharedPointer<BurnerWidgets> createStructFromBurnerWidgets();
+    QPointer<CurrentBurningVerificationStage> createBurnerSteps();
+
     void initializeSettingsSave();
-    void verify();
-    QString calculatingImageMD5();
-    QString calculatingDvdMD5();
-    void startBusy(const bool main = false);
-    void stopBusy(const bool main = false);
 
     const ApplicationInformations applications_informations;
+    QPointer<Verification> verification;
+    QPointer<BurnerStage> start_burner_stage;
     QString dvdrwmediainfo, imageMd5sum, dvdMd5sum;
-    QProcess *checkMediaProcess, *burnProcess;
+    QProcess *checkMediaProcess;
     QStringList mediaInfo;
     qint64 md5ProgressMax;
-    bool burning, verifying, cancel;
-    int blockSize;
-
-signals:
-    void md5SumMaximum(qint64);
-    void md5SumProgress(qint64);
 };

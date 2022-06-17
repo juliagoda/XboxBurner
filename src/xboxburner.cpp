@@ -46,6 +46,7 @@
 #include <QtConcurrent>
 #include <QtGlobal>
 
+
 XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informations,
                        QWidget* parent)
     : QMainWindow(parent)
@@ -53,13 +54,11 @@ XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informati
     , backup { new Backup(createStructFromBurnerWidgets()) }
     , burner_widgets { createStructFromBurnerWidgets() }
     , applications_informations { new_applications_informations }
+    , verification { new Verification(burner_widgets) }
+    , start_burner_stage { createBurnerSteps() }
     , imageMd5sum { QString("") }
     , dvdMd5sum { QString("") }
     , md5ProgressMax { 0 }
-    , burning { false }
-    , verifying { false }
-    , cancel { false }
-    , blockSize { 2048 }
 {
     ui->setupUi(this);
 }
@@ -87,6 +86,19 @@ QSharedPointer<BurnerWidgets> XBoxBurner::createStructFromBurnerWidgets()
     struct_burner_widgets.data()->status_bar = ui->statusBar;
     struct_burner_widgets.data()->status_frame = ui->frame_1;
     return struct_burner_widgets;
+}
+
+QPointer<CurrentBurningVerificationStage> XBoxBurner::createBurnerSteps()
+{
+    QPointer<CurrentBurningVerificationStage> verification_stage = new CurrentBurningVerificationStage(burner_widgets);
+    QPointer<PathsAndSpeedContentVerificationStage> paths_and_speed_content_verification_stage = new PathsAndSpeedContentVerificationStage(burner_widgets);
+    QPointer<BurningAcceptanceStage> burning_acceptance_stage = new BurningAcceptanceStage(burner_widgets);
+    QPointer<TruncateImageStartStage> truncate_image_start_stage = new TruncateImageStartStage(burner_widgets, backup);
+    QPointer<BurnerStartStage> burner_start_stage = new BurnerStartStage(burner_widgets);
+
+    QPointer<CurrentBurningVerificationStage> start_stage = verification_stage;
+    verification_stage->next(paths_and_speed_content_verification_stage)->next(burning_acceptance_stage)->next(truncate_image_start_stage)->next(burner_start_stage);
+    return start_stage;
 }
 
 void XBoxBurner::initializeSettingsSave()
@@ -140,43 +152,25 @@ void XBoxBurner::on_push_button_check_clicked()
 
 void XBoxBurner::startBurn_triggered()
 {
-    CurrentBurningVerificationStage* verification_stage = new CurrentBurningVerificationStage(burner_widgets);
-    PathsAndSpeedContentVerificationStage* paths_and_speed_content_verification_stage = new PathsAndSpeedContentVerificationStage(burner_widgets);
-    BurningAcceptanceStage* burning_acceptance_stage = new BurningAcceptanceStage(burner_widgets);
-    TruncateImageStartStage* truncate_image_start_stage = new TruncateImageStartStage(burner_widgets, backup);
-    BurnerStartStage* burner_start_stage = new BurnerStartStage(burner_widgets);
+    start_burner_stage->handle();
 
-    CurrentBurningVerificationStage* start_stage = verification_stage;
-    verification_stage->next(paths_and_speed_content_verification_stage)->next(burning_acceptance_stage)->next(truncate_image_start_stage)->next(burner_start_stage);
-    start_stage->handle();
+    QObject::connect(start_burner_stage, &BurnerStage::finishedBurning, this, &XBoxBurner::verify_triggered);
 }
 
 void XBoxBurner::verify_triggered()
 {
-    if (verifying)
-    {
-        cancel = true;
-        return;
-    }
-
-    if (!ui->lineedit_image_path->text().isEmpty() &&
-            !ui->lineedit_burner_path->text().isEmpty())
-        verify();
+    verification->trigger();
 }
 
 void XBoxBurner::reset_triggered()
 {
     if (BoxMessages::resetAllMessage(this) == QMessageBox::Ok)
     {
-        if (burning)
-            burnProcess->kill();
+        if (start_burner_stage->isRunning())
+            start_burner_stage->kill();
 
-        burning = false;
-        verifying = false;
-        cancel = false;
-        md5ProgressMax = 0;
-        imageMd5sum.clear();
-        dvdMd5sum.clear();
+        if (verification->getCurrentState() != VerificationState::CurrentState::Cancelled)
+            verification->cancel();
 
         ui->label_info->setStyleSheet("");
         ui->combo_box_write_speed->clear();
@@ -312,244 +306,13 @@ void XBoxBurner::getMediaInfo_finished(const int exitCode,
     }
     else
     {
-        QString errorMessage = Messages::burningErrorMessage(burnProcess->errorString(), exitCode, exitStatus);
+        QString errorMessage = Messages::burningErrorMessage(start_burner_stage->getProcess()->errorString(), exitCode, exitStatus);
         ui->plain_text_edit_with_logs->appendPlainText(errorMessage);
         showStatusBarMessage(errorMessage);
     }
 
     ui->label_info->setText(Messages::burnerMediaAvailability(burner_txt, media_txt));
     delete checkMediaProcess;
-}
-
-void XBoxBurner::verify()
-{
-    showStatusBarMessage(Messages::checksum_calculation_image);
-    ui->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_image);
-    ui->toolBar->actions().at(4)->setIcon(QIcon(":/images/cancel.png"));
-    ui->toolBar->actions().at(4)->setText(tr("&Cancel"));
-
-    startBusy();
-
-    if (imageMd5sum.isEmpty()) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QFuture<QString> imageFuture = QtConcurrent::run(this, &XBoxBurner::calculatingImageMD5);
-#else
-        QFuture<QString> imageFuture = QtConcurrent::run(&XBoxBurner::calculatingImageMD5, this);
-#endif
-        image_future_watcher.setFuture(imageFuture);
-    } else {
-        showStatusBarMessage(Messages::checksum_calculation_dvd);
-        ui->plain_text_edit_with_logs->appendPlainText("Checksum of image already exists.");
-        ui->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_dvd);
-        ui->progress_bar_burn->setValue(0);
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QFuture<QString> dvdFuture = QtConcurrent::run(this, &XBoxBurner::calculatingDvdMD5);
-#else
-        QFuture<QString> dvdFuture = QtConcurrent::run(&XBoxBurner::calculatingDvdMD5, this);
-#endif
-        dvd_future_watcher.setFuture(dvdFuture);
-    }
-}
-
-void XBoxBurner::setMaximalPossibleMD5HashValue(qint64 maximal_value)
-{
-    md5ProgressMax = maximal_value;
-}
-
-void XBoxBurner::calculateMD5HashForProgressBar(qint64 hash_current_block)
-{
-    ui->progress_bar_burn->setValue(hash_current_block * 100 / md5ProgressMax);
-}
-
-QString XBoxBurner::calculatingImageMD5()
-{
-    QCryptographicHash hash(QCryptographicHash::Md5);
-    QFile image(ui->lineedit_image_path->text().simplified());
-    int blockCount = image.size() / blockSize;
-    verifying = true;
-
-    emit md5SumMaximum(blockCount);
-
-    if (image.open(QFile::ReadOnly))
-    {
-        for (int block = 0; block < blockCount; block++)
-        {
-            hash.addData(image.read(blockSize));
-            emit md5SumProgress(block + 1);
-
-            if (cancel) break;
-        }
-
-        image.close();
-        return hash.result().toHex();
-    }
-    else
-    {
-        return "";
-    }
-}
-
-void XBoxBurner::calculateMD5HashOfImage()
-{
-    verifying = false;
-
-    if (cancel)
-    {
-        ui->toolBar->actions().at(4)->setIcon(QIcon(":/images/verify.png"));
-        ui->toolBar->actions().at(4)->setText(tr("&Verify"));
-        showStatusBarMessage(tr("Calculation of image checksum canceled!"));
-        ui->plain_text_edit_with_logs->appendPlainText("Calculation of image checksum canceled!");
-
-        stopBusy();
-        cancel = false;
-        return;
-    }
-
-    QString result = image_future_watcher.result();
-
-    if (result.isEmpty())
-    {
-        showStatusBarMessage(tr("Calculation of image checksum failed!"));
-        ui->plain_text_edit_with_logs->appendPlainText("Calculation of image checksum failed!");
-    }
-    else
-    {
-        imageMd5sum = result;
-        ui->plain_text_edit_with_logs->appendPlainText("Checksum of image: " + result);
-        showStatusBarMessage(Messages::checksum_calculation_dvd);
-        ui->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_dvd);
-        ui->progress_bar_burn->setValue(0);
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QFuture<QString> dvdFuture = QtConcurrent::run(this, &XBoxBurner::calculatingDvdMD5);
-#else
-        QFuture<QString> dvdFuture = QtConcurrent::run(&XBoxBurner::calculatingDvdMD5, this);
-#endif
-
-        dvd_future_watcher.setFuture(dvdFuture);
-    }
-}
-
-QString XBoxBurner::calculatingDvdMD5()
-{
-    QCryptographicHash hash(QCryptographicHash::Md5);
-    QFile device(ui->lineedit_burner_path->text().simplified());
-    QFile image(ui->lineedit_image_path->text().simplified());
-    int blockCount = image.size() / blockSize;
-
-    verifying = true;
-
-    emit md5SumMaximum(blockCount);
-
-    if (device.open(QIODevice::ReadOnly))
-    {
-        char buf[blockSize];
-
-        for (int block = 0; block < blockCount; block++)
-        {
-            device.read(buf, blockSize);
-            hash.addData(buf, blockSize);
-
-            emit md5SumProgress(block + 1);
-
-            if (cancel) break;
-        }
-
-        device.close();
-        return hash.result().toHex();
-    }
-    else
-    {
-        return "";
-    }
-}
-
-void XBoxBurner::calculateMD5HashOfDVD()
-{
-    verifying = false;
-    ui->toolBar->actions().at(4)->setIcon(QIcon(":/images/verify.png"));
-    ui->toolBar->actions().at(4)->setText(tr("&Verify"));
-
-    stopBusy();
-
-    if (cancel)
-    {
-        showStatusBarMessage(tr("Calculation of DVD checksum canceled!"));
-        ui->plain_text_edit_with_logs->appendPlainText("Calculation of DVD checksum canceled!");
-        cancel = false;
-    }
-    else
-    {
-        QString result = dvd_future_watcher.result();
-
-        if (result.isEmpty())
-        {
-            showStatusBarMessage(tr("Calculation of DVD checksum failed!"));
-            ui->plain_text_edit_with_logs->appendPlainText("Calculation of DVD checksum failed!");
-        }
-        else
-        {
-            dvdMd5sum = result;
-            ui->plain_text_edit_with_logs->appendPlainText("Checksum of DVD: " + result);
-
-            if (imageMd5sum == dvdMd5sum)
-            {
-                ui->frame_1->setStyleSheet("QFrame { background-color : green; }");
-                showStatusBarMessage(tr("Verification successfully!"));
-                ui->plain_text_edit_with_logs->appendPlainText("Verification successfully!");
-            }
-            else
-            {
-                ui->frame_1->setStyleSheet("QFrame { background-color : red; }");
-                showStatusBarMessage(tr("Verification failed!"));
-                ui->plain_text_edit_with_logs->appendPlainText("Verification failed!");
-            }
-
-            imageMd5sum.clear();
-            dvdMd5sum.clear();
-        }
-    }
-}
-
-void XBoxBurner::startBusy(const bool main)
-{
-    if (main)
-    {
-        ui->progress_bar_burn->setMinimum(0);
-        ui->progress_bar_burn->setMaximum(0);
-        ui->progress_bar_burn->setValue(-1);
-    }
-    else
-    {
-        ui->progress_bar_ring_buffer_unit->setMinimum(0);
-        ui->progress_bar_ring_buffer_unit->setMaximum(0);
-        ui->progress_bar_ring_buffer_unit->setValue(-1);
-
-        ui->progress_bar_unit_buffer_unit->setMinimum(0);
-        ui->progress_bar_unit_buffer_unit->setMaximum(0);
-        ui->progress_bar_unit_buffer_unit->setValue(-1);
-    }
-}
-
-void XBoxBurner::stopBusy(const bool main)
-{
-    if (main)
-    {
-        ui->progress_bar_burn->setMinimum(0);
-        ui->progress_bar_burn->setMaximum(100);
-        ui->progress_bar_burn->setValue(0);
-    }
-    else
-    {
-        ui->progress_bar_ring_buffer_unit->setMinimum(0);
-        ui->progress_bar_ring_buffer_unit->setMaximum(100);
-        ui->progress_bar_ring_buffer_unit->setValue(0);
-
-        ui->progress_bar_unit_buffer_unit->setMinimum(0);
-        ui->progress_bar_unit_buffer_unit->setMaximum(100);
-        ui->progress_bar_unit_buffer_unit->setValue(0);
-    }
 }
 
 void XBoxBurner::showStatusBarMessage(const QString& text)

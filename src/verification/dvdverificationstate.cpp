@@ -25,16 +25,26 @@
 #include <QtConcurrent>
 
 DvdVerificationState::DvdVerificationState(Verification* new_verification) :
-    VerificationState(new_verification),
-    burner_progress_bars_setup{ QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(verification->getBurnerWidgets())) }
+    VerificationState(new_verification)
 {
     QObject::connect(verification->getBurnerWidgets()->dvd_future_watcher, &QFutureWatcher<QString>::finished, verification, &Verification::calculateMd5Hash);
+}
+
+VerificationState::CurrentState DvdVerificationState::getCurrentState() const
+{
+   return VerificationState::CurrentState::VerificatedDvd;
 }
 
 void DvdVerificationState::onTrigger()
 {
    verification->changeState(QSharedPointer<CancelState>(new CancelState(verification)));
    verification->trigger();
+}
+
+void DvdVerificationState::onCancel()
+{
+    verification->changeState(QSharedPointer<CancelState>(new CancelState(verification)));
+    showCancelMessage(QObject::tr("Cancelled during dvd verification"));
 }
 
 void DvdVerificationState::onPrepareWidgetsBeforeCalculations()

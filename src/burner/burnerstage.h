@@ -54,6 +54,27 @@ public:
         return true;
     }
 
+    QProcess* getProcess() const
+    {
+        return burn_process;
+    }
+
+    void kill()
+    {
+        if (burning)
+            burn_process->kill();
+
+        burning = false;
+    }
+
+    bool isRunning()
+    {
+        return burning;
+    }
+
+signals:
+    void finishedBurning();
+
 protected:
     QSharedPointer<BurnerWidgets> burner_widgets;
     QSharedPointer<BurnerProgressBarsSetup> burner_progress_bars_setup;

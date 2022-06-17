@@ -42,21 +42,11 @@ MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& 
     preparePathCompleters();
     showStatusBarMessage(tr("Ready."));
     prepareFontStyleForInformationLabel();
-    initializeConnections();
 }
 
 void MainWindowInitializator::initializeSettingsLoad()
 {
     settings->loadSettings();
-}
-
-void MainWindowInitializator::initializeConnections()
-{
-    QObject::connect(&backup_future_watcher, &QFutureWatcher<bool>::finished, backup, &Backup::log);
-    QObject::connect(&image_future_watcher, &QFutureWatcher<QString>::finished, this, &MainWindowInitializator::calculateMD5HashOfImage);
-    QObject::connect(&dvd_future_watcher, &QFutureWatcher<QString>::finished, this, &MainWindowInitializator::calculateMD5HashOfDVD);
-    QObject::connect(this, &MainWindowInitializator::md5SumMaximum, this, &MainWindowInitializator::setMaximalPossibleMD5HashValue);
-    QObject::connect(this, &MainWindowInitializator::md5SumProgress, this, &MainWindowInitializator::calculateMD5HashForProgressBar);
 }
 
 void MainWindowInitializator::prepareFontStyleForInformationLabel()

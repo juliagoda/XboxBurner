@@ -19,6 +19,8 @@
 #pragma once
 
 #include "burner/burnerwidgets.h"
+#include "burner/burnerprogressbarssetup.h"
+
 #include <QString>
 
 class Verification;
@@ -26,14 +28,27 @@ class Verification;
 class VerificationState
 {
 public:
+
+    enum class CurrentState
+    {
+        Cancelled,
+        Started,
+        VerificatedImage,
+        VerificatedDvd
+    };
+
     VerificationState(Verification* new_verification);
     virtual ~VerificationState() = default;
-    virtual const QString getStateName();
+    virtual CurrentState getCurrentState() const = 0;
     virtual void onTrigger() = 0;
+    virtual void onCancel() = 0;
     virtual void onPrepareWidgetsBeforeCalculations() = 0;
     virtual QString onCalculateMd5() = 0;
     virtual void onCalculateMd5Hash() = 0;
 
 protected:
     Verification* verification;
+    QSharedPointer<BurnerProgressBarsSetup> burner_progress_bars_setup;
+
+    void showCancelMessage(const QString& message);
 };

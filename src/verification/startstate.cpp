@@ -23,27 +23,39 @@
 #include "constants/boxmessages.h"
 #include "constants/messages.h"
 
+#include <QMessageBox>
+
 StartState::StartState(Verification* new_verification) :
     VerificationState(new_verification)
 {}
 
+VerificationState::CurrentState StartState::getCurrentState() const
+{
+    return VerificationState::CurrentState::Started;
+}
+
 void StartState::onTrigger()
 {
-    if (verification->notEmptyPaths() || verification->verificationChecked())
-        verification->prepareWidgetsBeforeCalculations();
+    if (!verification->notEmptyPaths() && !verification->verificationChecked())
+    {
+        QMessageBox::warning(new QWidget, QObject::tr("Verification launch failure"), QObject::tr("Are you sure that the verification option is checked or the paths for the image and burning are specified?"), QMessageBox::Cancel, QMessageBox::Cancel);
+        return;
+    }
+
+    verification->changeState(QSharedPointer<ImageVerificationState>(new ImageVerificationState(verification)));
+    verification->prepareWidgetsBeforeCalculations();
+}
+
+void StartState::onCancel()
+{
+    verification->changeState(QSharedPointer<CancelState>(new CancelState(verification)));
+    showCancelMessage(QObject::tr("Cancelled start"));
 }
 
 void StartState::onPrepareWidgetsBeforeCalculations()
 {
-   /* burner_widgets.data()->status_bar->showMessage(Messages::checksum_calculation_image, 0);
-    burner_widgets.data()->plain_text_edit_with_logs->appendPlainText(Messages::checksum_calculation_image);
-    burner_widgets.data()->toolbar->actions().at(4)->setIcon(QIcon(":/images/cancel.png"));
-    burner_widgets.data()->toolbar->actions().at(4)->setText(QObject::tr("&Cancel"));
-
-    auto burner_progress_bars_setup = QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(burner_widgets));
-    burner_progress_bars_setup.data()->resetRingAndUnitProgressBarsValues();
-
-    verification->changeState(QSharedPointer<ImageVerificationState>(new ImageVerificationState(verification)));*/
+    // it's start state, so we start again from beginning
+     verification->trigger();
 }
 
 QString StartState::onCalculateMd5()

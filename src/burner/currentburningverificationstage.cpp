@@ -32,6 +32,7 @@ bool CurrentBurningVerificationStage::handle()
     {
         if (BoxMessages::cancelBurnProcessMessage(new QWidget) == QMessageBox::Ok)
             burn_process->kill();
+
         return false;
     }
 

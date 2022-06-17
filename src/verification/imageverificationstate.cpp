@@ -26,16 +26,26 @@
 #include <QtConcurrent>
 
 ImageVerificationState::ImageVerificationState(Verification* new_verification) :
-    VerificationState(new_verification),
-    burner_progress_bars_setup{ QSharedPointer<BurnerProgressBarsSetup>(new BurnerProgressBarsSetup(verification->getBurnerWidgets())) }
+    VerificationState(new_verification)
 {
     QObject::connect(verification->getBurnerWidgets()->image_future_watcher, &QFutureWatcher<QString>::finished, verification, &Verification::calculateMd5Hash);
+}
+
+VerificationState::CurrentState ImageVerificationState::getCurrentState() const
+{
+    return VerificationState::CurrentState::VerificatedImage;
 }
 
 void ImageVerificationState::onTrigger()
 {
     verification->changeState(QSharedPointer<CancelState>(new CancelState(verification)));
     verification->trigger();
+}
+
+void ImageVerificationState::onCancel()
+{
+    verification->changeState(QSharedPointer<CancelState>(new CancelState(verification)));
+    showCancelMessage(QObject::tr("Cancelled during image verification"));
 }
 
 void ImageVerificationState::onPrepareWidgetsBeforeCalculations()

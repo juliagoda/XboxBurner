@@ -42,7 +42,6 @@ public:
 
 private:
     void initializeSettingsLoad();
-    void initializeConnections();
     void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
                               const QStringList& name_filters);
     void prepareFontStyleForInformationLabel();
