@@ -44,9 +44,28 @@ MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& 
     prepareFontStyleForInformationLabel();
 }
 
+void MainWindowInitializator::showMainWindow()
+{
+    if (!mainWindowShowed())
+        show();
+}
+
 void MainWindowInitializator::initializeSettingsLoad()
 {
     settings->loadSettings();
+}
+
+void MainWindowInitializator::preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
+                                                   const QStringList& name_filters)
+{
+    QPointer<QCompleter> path_completer { new QCompleter(this) };
+    QPointer<QFileSystemModel> file_system_model { new QFileSystemModel(path_completer) };
+    file_system_model->setNameFilters(name_filters);
+    file_system_model->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+    path_completer->setModel(file_system_model);
+    path_completer->setCaseSensitivity(Qt::CaseInsensitive);
+    path_completer->setMaxVisibleItems(12);
+    completer_path_place->setCompleter(path_completer);
 }
 
 void MainWindowInitializator::prepareFontStyleForInformationLabel()
@@ -69,30 +88,6 @@ void MainWindowInitializator::preparePathCompleters()
     preparePathCompleter(burner_path_place, QStringList());
 }
 
-void MainWindowInitializator::preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-                                                   const QStringList& name_filters)
-{
-    QPointer<QCompleter> path_completer { new QCompleter(this) };
-    QPointer<QFileSystemModel> file_system_model { new QFileSystemModel(path_completer) };
-    file_system_model->setNameFilters(name_filters);
-    file_system_model->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
-    path_completer->setModel(file_system_model);
-    path_completer->setCaseSensitivity(Qt::CaseInsensitive);
-    path_completer->setMaxVisibleItems(12);
-    completer_path_place->setCompleter(path_completer);
-}
-
-void MainWindowInitializator::showMainWindow()
-{
-    if (!mainWindowShowed())
-        show();
-}
-
-bool MainWindowInitializator::mainWindowShowed()
-{
-    return isVisible();
-}
-
 void MainWindowInitializator::fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list,
                                                     const ApplicationInformations& new_applications_informations)
 {
@@ -104,6 +99,11 @@ void MainWindowInitializator::fillPlainTextWithLogs(const QList<QSharedPointer<D
         auto external_dependency = external_dependencies_list_iterator.next();
         ui->plain_text_edit_with_logs->appendPlainText(external_dependency.data()->showToolDetectionInformations().join("\n"));
     }
+}
+
+bool MainWindowInitializator::mainWindowVisible()
+{
+    return isVisible();
 }
 
 const QSharedPointer<ListSettingsWidget> MainWindowInitializator::createListOfSaveLoadStrategies()

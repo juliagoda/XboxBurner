@@ -65,20 +65,20 @@ protected:
     QSharedPointer<BurnerWidgets> burner_widgets;
 
 protected slots:
+    void about_triggered();
     void burn_triggered();
+    void exit_triggered();
     void log_triggered();
-
-    void on_push_button_open_image_path_clicked();
-    void on_push_button_check_clicked();
-    void on_combo_box_dvd_format_currentIndexChanged(int index);
+    void reset_triggered();
     void startBurn_triggered();
     void verify_triggered();
-    void reset_triggered();
-    void about_triggered();
-    void exit_triggered();
+
+    void on_combo_box_dvd_format_currentIndexChanged(int index);
+    void on_push_button_check_clicked();
     void on_push_button_copy_clicked();
-    void on_push_button_save_clicked();
     void on_push_button_logs_reset_clicked();
+    void on_push_button_open_image_path_clicked();
+    void on_push_button_save_clicked();
 
     void toolBar_toolButtonIconOnly();
     void toolBar_toolButtonTextOnly();
@@ -88,13 +88,13 @@ protected slots:
 private:
     QSharedPointer<BurnerWidgets> createStructFromBurnerWidgets();
     QPointer<CurrentBurningVerificationStage> createBurnerSteps();
+
     void setPixmapForXboxLabel(int index);
     void updateDvdComboBoxForDvdRFormat(int index);
     void initializeSettingsSave();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
 
     const ApplicationInformations applications_informations;
-    QPointer<Verification> verification;
     QPointer<BurnerStage> start_burner_stage;
     QPointer<BurnerPathValidation> burner_path_validation;
+    QPointer<Verification> verification;
 };

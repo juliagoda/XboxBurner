@@ -20,6 +20,7 @@
 
 #include "constants/boxmessages.h"
 #include "constants/messages.h"
+#include "constants/regularexpressions.h"
 #include "dependencies/dvdrwtoolstooldependencyfactory.h"
 
 #include <QObject>
@@ -98,8 +99,7 @@ const QString BurnerStartStage::layerBreak()
 
 void BurnerStartStage::burnProcess_readyReadStandardOutput()
 {
-    QString growisofs_data;
-    QRegularExpression progress_line("\\d+/\\d+\\s*\\(\\s*((?:[0-9]|[.,])+)\\%\\s*\\)\\s*@((?:[0-9]|[.,])+)[xX],\\s+\\w+\\s+((?:[0-9]|[:?])+)\\s+\\w+\\s+((?:[0-9]|[.,])+)\\%\\s+\\w+\\s+((?:[0-9]|[.,])+).*");
+    QString growisofs_data = QString();
 
     while (burn_process->canReadLine())
     {
@@ -110,7 +110,7 @@ void BurnerStartStage::burnProcess_readyReadStandardOutput()
 
         updateWidgetsWithGrowisoData(growisofs_data);
 
-        QRegularExpressionMatch progress_line_match = progress_line.match(growisofs_data);
+        QRegularExpressionMatch progress_line_match = RegularExpressions::progressLine().match(growisofs_data);
 
         if (progress_line_match.hasMatch())
             updateWidgetsWithProgressData(progress_line_match);

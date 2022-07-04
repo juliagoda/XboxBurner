@@ -16,39 +16,24 @@
  *   along with this program; if not, go to http://www.gnu.org             *
  ***************************************************************************/
 
-#pragma once
+#include "regularexpressions.h"
 
-#include "constants/applicationinformations.h"
-#include "dependencies/dvdrwtoolsdependencyfactory.h"
-#include "settings/widgetdatasavestrategy.h"
-#include "xboxburner.h"
-
-#include <QLineEdit>
-#include <QPointer>
-#include <QSharedPointer>
-#include <QStringList>
-#include <QWidget>
-
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner
+const QRegularExpression RegularExpressions::burnerLine()
 {
-    Q_OBJECT
+    return QRegularExpression("INQUIRY:\\s*(.+)");
+}
 
-public:
-    explicit MainWindowInitializator(const ApplicationInformations& new_applications_informations,
-                                     QWidget* parent = nullptr);
-    void showMainWindow();
+const QRegularExpression RegularExpressions::mediaLine()
+{
+    return QRegularExpression("(?:MOUNTED MEDIA|MEDIA BOOK TYPE|MEDIA ID):\\s*(.+)");
+}
 
-private:
-    void initializeSettingsLoad();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-                              const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    void fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list,
-                               const ApplicationInformations& new_applications_informations);
-    bool mainWindowVisible();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-    const QList<QSharedPointer<DvdrwtoolsDependencyFactory>> createListOfExternalDependencies();
-};
+const QRegularExpression RegularExpressions::speedLine()
+{
+    return QRegularExpression("WRITE SPEED\\s*\\#\\d\\:\\s*((?:[0-9]|[,.])+)[xX].*");
+}
+
+const QRegularExpression RegularExpressions::progressLine()
+{
+    return QRegularExpression("\\d+/\\d+\\s*\\(\\s*((?:[0-9]|[.,])+)\\%\\s*\\)\\s*@((?:[0-9]|[.,])+)[xX],\\s+\\w+\\s+((?:[0-9]|[:?])+)\\s+\\w+\\s+((?:[0-9]|[.,])+)\\%\\s+\\w+\\s+((?:[0-9]|[.,])+).*");
+}

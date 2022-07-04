@@ -23,6 +23,7 @@ SOURCES += src/backup.cpp \
     src/constants/boxmessages.cpp \
     src/constants/fileextensions.cpp \
     src/constants/messages.cpp \
+    src/constants/regularexpressions.cpp \
     src/dependencies/dvdrwtoolsdependencyfactory.cpp \
     src/dependencies/dvdrwtoolstooldependencyfactory.cpp \
     src/dependencies/externaldependencyfactory.cpp \
@@ -57,6 +58,7 @@ HEADERS   += src/backup.h \
     src/constants/boxmessages.h \
     src/constants/fileextensions.h \
     src/constants/messages.h \
+    src/constants/regularexpressions.h \
     src/dependencies/dvdrwtoolsdependencyfactory.h \
     src/dependencies/dvdrwtoolstooldependencyfactory.h \
     src/dependencies/externaldependencyfactory.h \

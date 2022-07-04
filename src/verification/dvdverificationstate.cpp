@@ -72,17 +72,17 @@ QString DvdVerificationState::onCalculateMd5()
     QCryptographicHash hash(QCryptographicHash::Md5);
     QFile device(verification->getBurnerWidgets()->lineedit_burner_path->text().simplified());
     QFile image(verification->getBurnerWidgets()->lineedit_image_path->text().simplified());
-    int block_count = image.size() / verification->getBlockSize();
-    verification->setMaximalPossibleMD5HashValue(block_count);
+    int block_size = image.size() / verification->getBlockSize();
+    verification->setMaximalPossibleMD5HashValue(block_size);
 
     if (device.open(QFile::ReadOnly))
     {
-        char buf[verification->getBlockSize()];
+        char buffer[verification->getBlockSize()];
 
-        for (int block_number = 0; block_number < block_count; block_number++)
+        for (int block_number = 0; block_number < block_size; block_number++)
         {
-            device.read(buf, verification->getBlockSize());
-            hash.addData(buf, verification->getBlockSize());
+            device.read(buffer, verification->getBlockSize());
+            hash.addData(buffer, verification->getBlockSize());
             verification->calculateMD5HashForProgressBar(block_number + 1);
         }
 

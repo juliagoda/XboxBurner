@@ -18,37 +18,14 @@
 
 #pragma once
 
-#include "constants/applicationinformations.h"
-#include "dependencies/dvdrwtoolsdependencyfactory.h"
-#include "settings/widgetdatasavestrategy.h"
-#include "xboxburner.h"
+#include <QRegularExpression>
 
-#include <QLineEdit>
-#include <QPointer>
-#include <QSharedPointer>
-#include <QStringList>
-#include <QWidget>
-
-class ListSettingsWidget;
-
-class MainWindowInitializator : public XBoxBurner
+class RegularExpressions
 {
-    Q_OBJECT
-
 public:
-    explicit MainWindowInitializator(const ApplicationInformations& new_applications_informations,
-                                     QWidget* parent = nullptr);
-    void showMainWindow();
-
-private:
-    void initializeSettingsLoad();
-    void preparePathCompleter(QPointer<QLineEdit> const completer_path_place,
-                              const QStringList& name_filters);
-    void prepareFontStyleForInformationLabel();
-    void preparePathCompleters();
-    void fillPlainTextWithLogs(const QList<QSharedPointer<DvdrwtoolsDependencyFactory>>& external_dependencies_list,
-                               const ApplicationInformations& new_applications_informations);
-    bool mainWindowVisible();
-    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
-    const QList<QSharedPointer<DvdrwtoolsDependencyFactory>> createListOfExternalDependencies();
+    static const QRegularExpression burnerLine();
+    static const QRegularExpression mediaLine();
+    static const QRegularExpression speedLine();
+    static const QRegularExpression progressLine();
 };
+

@@ -18,6 +18,7 @@
 
 #include "burnerpathvalidation.h"
 #include "constants/messages.h"
+#include "constants/regularexpressions.h"
 
 BurnerPathValidation::BurnerPathValidation(QSharedPointer<BurnerWidgets> new_burner_widgets,
                                            QPointer<BurnerStage> new_start_burner_stage)
@@ -49,17 +50,14 @@ void BurnerPathValidation::start()
 
 void BurnerPathValidation::fillWithBurnerData()
 {
-    QRegularExpression burner_line("INQUIRY:\\s*(.+)");
-    QRegularExpression media_line("(?:MOUNTED MEDIA|MEDIA BOOK TYPE|MEDIA ID):\\s*(.+)");
-    QRegularExpression speed_line("WRITE SPEED\\s*\\#\\d\\:\\s*((?:[0-9]|[,.])+)[xX].*");
-    QString burner_txt;
-    QStringList media_txt;
+    QString burner_txt = QString();
+    QStringList media_txt = QStringList();
 
     for (int i = 0; i < dvd_info.size(); i++)
     {
-        QRegularExpressionMatch burner_line_match = burner_line.match(dvd_info.at(i).simplified().toUpper());
-        QRegularExpressionMatch media_line_match = media_line.match(dvd_info.at(i).simplified().toUpper());
-        QRegularExpressionMatch speed_line_match = speed_line.match(dvd_info.at(i).simplified().toUpper());
+        QRegularExpressionMatch burner_line_match = RegularExpressions::burnerLine().match(dvd_info.at(i).simplified().toUpper());
+        QRegularExpressionMatch media_line_match = RegularExpressions::mediaLine().match(dvd_info.at(i).simplified().toUpper());
+        QRegularExpressionMatch speed_line_match = RegularExpressions::speedLine().match(dvd_info.at(i).simplified().toUpper());
 
         if (burner_line_match.hasMatch())
             burner_txt = burner_line_match.captured(0).simplified();
