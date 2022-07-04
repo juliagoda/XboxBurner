@@ -9,6 +9,7 @@ MOC_DIR      = build/moc
 RCC_DIR      = build/rcc
 CODECFORTR   = UTF-8
 CODECFORSRC  = UTF-8
+CONFIG += c++2a
 
 QMAKE_CXXFLAGS += -std=c++2a -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic
 
