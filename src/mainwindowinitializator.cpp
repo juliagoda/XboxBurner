@@ -46,7 +46,7 @@ MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& 
 
 void MainWindowInitializator::showMainWindow()
 {
-    if (!mainWindowShowed())
+    if (!mainWindowVisible())
         show();
 }
 
