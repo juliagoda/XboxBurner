@@ -35,6 +35,7 @@ SOURCES += src/backup.cpp \
     src/settings/mainwindowdatasavestrategy.cpp \
     src/settings/toolbardatastrategy.cpp \
     src/settings/settings.cpp \
+    src/verification/burnerpathvalidation.cpp \
     src/verification/cancelstate.cpp \
     src/verification/dvdverificationstate.cpp \
     src/verification/imageverificationstate.cpp \
@@ -68,6 +69,7 @@ HEADERS   += src/backup.h \
     src/settings/settings.h \
     src/settings/toolbardatastrategy.h \
     src/settings/widgetdatasavestrategy.h \
+    src/verification/burnerpathvalidation.h \
     src/verification/cancelstate.h \
     src/verification/dvdverificationstate.h \
     src/verification/imageverificationstate.h \

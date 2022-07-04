@@ -33,6 +33,7 @@
 #include "constants/boxmessages.h"
 #include "constants/messages.h"
 #include "dependencies/dvdrwtoolstooldependencyfactory.h"
+#include "verification/burnerpathvalidation.h"
 
 #include <QAction>
 #include <QCompleter>
@@ -56,9 +57,7 @@ XBoxBurner::XBoxBurner(const ApplicationInformations& new_applications_informati
     , applications_informations { new_applications_informations }
     , verification { new Verification(burner_widgets) }
     , start_burner_stage { createBurnerSteps() }
-    , imageMd5sum { QString("") }
-    , dvdMd5sum { QString("") }
-    , md5ProgressMax { 0 }
+    , burner_path_validation { new BurnerPathValidation(burner_widgets, start_burner_stage) }
 {
     ui->setupUi(this);
 }
@@ -85,6 +84,7 @@ QSharedPointer<BurnerWidgets> XBoxBurner::createStructFromBurnerWidgets()
     struct_burner_widgets.data()->check_box_backup_creation = ui->check_box_backup_creation;
     struct_burner_widgets.data()->status_bar = ui->statusBar;
     struct_burner_widgets.data()->status_frame = ui->frame_1;
+    struct_burner_widgets.data()->label_info = ui->label_info;
     return struct_burner_widgets;
 }
 
@@ -123,31 +123,20 @@ void XBoxBurner::on_push_button_open_image_path_clicked()
     if (!ui->lineedit_image_path->text().isEmpty())
         path = ui->lineedit_image_path->text().mid(0, ui->lineedit_image_path->text().lastIndexOf("/"));
 
-    QString imagePath = QFileDialog::getOpenFileName(this, tr("Open dvd image"), path, tr("DVD images (*.iso *.img *.cdr)"));
+    QString image_path = QFileDialog::getOpenFileName(this, tr("Open dvd image"), path, tr("DVD images (*.iso *.img *.cdr)"));
 
-    if (!imagePath.isEmpty())
-    {
-        ui->lineedit_image_path->setText(imagePath);
-        if (imagePath.contains("xgd3", Qt::CaseInsensitive)) {
-            ui->combo_box_dvd_format->setCurrentIndex(1);
-        }
-    }
+    if (image_path.isEmpty())
+        return;
+
+    ui->lineedit_image_path->setText(image_path);
+
+    if (image_path.contains("xgd3", Qt::CaseInsensitive))
+        ui->combo_box_dvd_format->setCurrentIndex(1);
 }
 
 void XBoxBurner::on_push_button_check_clicked()
 {
-    if (!ui->lineedit_burner_path->text().isEmpty())
-    {
-        showStatusBarMessage(Messages::reading_info);
-        checkMediaProcess = new QProcess();
-
-        qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
-        connect(checkMediaProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(getMediaInfo_readyReadStandardOutput()));
-        connect(checkMediaProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(getMediaInfo_finished(int, QProcess::ExitStatus)));
-
-        mediaInfo.clear();
-        checkMediaProcess->start(dvdrwmediainfo, QStringList() << ui->lineedit_burner_path->text().simplified());
-    }
+    burner_path_validation->start();
 }
 
 void XBoxBurner::startBurn_triggered()
@@ -164,23 +153,22 @@ void XBoxBurner::verify_triggered()
 
 void XBoxBurner::reset_triggered()
 {
-    if (BoxMessages::resetAllMessage(this) == QMessageBox::Ok)
-    {
-        if (start_burner_stage->isRunning())
-            start_burner_stage->kill();
+    if (BoxMessages::resetAllMessage(this) != QMessageBox::Ok)
+       return;
 
-        if (verification->getCurrentState() != VerificationState::CurrentState::Cancelled)
-            verification->cancel();
+    if (start_burner_stage->isRunning())
+        start_burner_stage->kill();
 
-        ui->label_info->setStyleSheet("");
-        ui->combo_box_write_speed->clear();
-        ui->label_info->clear();
-        ui->progress_bar_burn->setValue(0);
-        ui->progress_bar_ring_buffer_unit->setValue(0);
-        ui->progress_bar_unit_buffer_unit->setValue(0);
+    if (verification->getCurrentState() != VerificationState::CurrentState::Cancelled)
+        verification->cancel();
 
-        showStatusBarMessage(tr("Ready."));
-    }
+    ui->label_info->setStyleSheet("");
+    ui->combo_box_write_speed->clear();
+    ui->label_info->clear();
+    ui->progress_bar_burn->setValue(0);
+    ui->progress_bar_ring_buffer_unit->setValue(0);
+    ui->progress_bar_unit_buffer_unit->setValue(0);
+    ui->statusBar->showMessage(tr("Ready."), 0);
 }
 
 void XBoxBurner::about_triggered()
@@ -195,24 +183,19 @@ void XBoxBurner::exit_triggered()
 
 void XBoxBurner::on_push_button_copy_clicked()
 {
-    QClipboard* clipboard = QApplication::clipboard();
+    QPointer<QClipboard> clipboard = QApplication::clipboard();
     clipboard->setText(ui->plain_text_edit_with_logs->toPlainText());
 }
 
 void XBoxBurner::on_push_button_save_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save log file"), QDir::homePath().append("/XBoxBurner.log"), tr("XBoxBurner log file (*.log)"));
+    QString file_name = QFileDialog::getSaveFileName(this, tr("Save log file"), QDir::homePath().append("/XBoxBurner.log"), tr("XBoxBurner log file (*.log)"));
+    QFile file(file_name);
 
-    if (!fileName.isEmpty())
+    if (!file_name.isEmpty() && file.open(QFile::WriteOnly | QFile::Truncate))
     {
-        QFile file(fileName);
-
-        if (file.open(QFile::WriteOnly | QFile::Truncate))
-        {
-            QTextStream textStream(&file);
-            textStream << ui->plain_text_edit_with_logs->toPlainText();
-        }
-
+        QTextStream text_stream(&file);
+        text_stream << ui->plain_text_edit_with_logs->toPlainText();
         file.close();
     }
 }
@@ -224,115 +207,53 @@ void XBoxBurner::on_push_button_logs_reset_clicked()
 
 void XBoxBurner::on_combo_box_dvd_format_currentIndexChanged(int index)
 {
-    QString name = QString();
-
-    switch (index)
-    {
-    case 0:
-    case 1:
-        name = ":/images/xbox.png";
-        break;
-    case 2:
-    case 3:
-    case 4:
-        name = ":/images/xbox360.png";
-        break;
-    case 5:
-        name = ":/images/dvdr.png";
-        break;
-    }
-
-    ui->label_xbox->setPixmap(QPixmap::fromImage(QImage(name)));
-
-    if (index == 5)
-    {
-        bool ok;
-        int layerBreak = QInputDialog::getInt(this, QCoreApplication::applicationName(), tr("Enter layer break:"), 0, 0, 4267015, 1, &ok, Qt::Dialog);
-
-        if (ok && layerBreak > 0)
-        {
-            ui->combo_box_dvd_format->setItemText(5, tr("Special format (%1)").arg(QString::number(layerBreak)));
-        }
-        else
-        {
-            ui->combo_box_dvd_format->setItemText(5, tr("Special format (manual layer break)"));
-            ui->combo_box_dvd_format->setCurrentIndex(0);
-        }
-    }
+    setPixmapForXboxLabel(index);
+    updateDvdComboBoxForDvdRFormat(index);
 }
 
-void XBoxBurner::getMediaInfo_readyReadStandardOutput()
+void XBoxBurner::setPixmapForXboxLabel(int index)
 {
-    QString media_process_data = checkMediaProcess->readAllStandardOutput().data();
-    ui->plain_text_edit_with_logs->appendPlainText(media_process_data);
-    mediaInfo.append(media_process_data.split("\n"));
+    if (index >= 0)
+        ui->label_xbox->setPixmap(QPixmap::fromImage(QImage(":/images/xbox.png")));
+
+    if (index >= 2)
+        ui->label_xbox->setPixmap(QPixmap::fromImage(QImage(":/images/xbox360.png")));
+
+    if (index >= 5)
+        ui->label_xbox->setPixmap(QPixmap::fromImage(QImage(":/images/dvdr.png")));
 }
 
-void XBoxBurner::getMediaInfo_finished(const int exitCode,
-                                       const QProcess::ExitStatus exitStatus)
+void XBoxBurner::updateDvdComboBoxForDvdRFormat(int index)
 {
-    QRegularExpression burner_line("INQUIRY:\\s*(.+)");
-    QRegularExpression media_line("(?:MOUNTED MEDIA|MEDIA BOOK TYPE|MEDIA ID):\\s*(.+)");
-    QRegularExpression speed_line("WRITE SPEED\\s*\\#\\d\\:\\s*((?:[0-9]|[,.])+)[xX].*");
-    QString burner_txt;
-    QStringList media_txt;
+    if (index != 5)
+      return;
 
-    ui->combo_box_write_speed->clear();
-    ui->label_info->clear();
+    bool layer_break_value_correct;
+    const int layer_break = QInputDialog::getInt(this, QCoreApplication::applicationName(), tr("Enter layer break:"), 0, 0, 4267015, 1, &layer_break_value_correct, Qt::Dialog);
 
-    if (exitCode >= 0 && exitStatus == 0)
+    if (layer_break_value_correct && layer_break > 0)
     {
-        for (int i = 0; i < mediaInfo.size(); i++)
-        {
-            QRegularExpressionMatch burner_line_match = burner_line.match(mediaInfo.at(i).simplified().toUpper());
-            QRegularExpressionMatch media_line_match = media_line.match(mediaInfo.at(i).simplified().toUpper());
-            QRegularExpressionMatch speed_line_match = speed_line.match(mediaInfo.at(i).simplified().toUpper());
-
-            if (burner_line_match.hasMatch())
-                burner_txt = burner_line_match.captured(0).simplified();
-            else if (media_line_match.hasMatch())
-                media_txt.append(media_line_match.captured(0).simplified().split(","));
-            else if (speed_line_match.hasMatch())
-                ui->combo_box_write_speed->addItem(QIcon(":/images/cdrom.png"), speed_line_match.captured(0).simplified());
-        }
-
-        if (burner_txt.simplified().isEmpty())
-            burner_txt = tr("Not available!");
-
-        if (media_txt.filter(QRegularExpression(".*\\S.*")).isEmpty())
-            media_txt.append(tr("Not available!"));
-
-        showStatusBarMessage(tr("Ready."));
-    }
-    else
-    {
-        QString errorMessage = Messages::burningErrorMessage(start_burner_stage->getProcess()->errorString(), exitCode, exitStatus);
-        ui->plain_text_edit_with_logs->appendPlainText(errorMessage);
-        showStatusBarMessage(errorMessage);
+        ui->combo_box_dvd_format->setItemText(5, tr("Special format (%1)").arg(QString::number(layer_break)));
+        return;
     }
 
-    ui->label_info->setText(Messages::burnerMediaAvailability(burner_txt, media_txt));
-    delete checkMediaProcess;
-}
-
-void XBoxBurner::showStatusBarMessage(const QString& text)
-{
-    ui->statusBar->showMessage(text, 0);
+    ui->combo_box_dvd_format->setItemText(5, tr("Special format (manual layer break)"));
+    ui->combo_box_dvd_format->setCurrentIndex(0);
 }
 
 QMenu* XBoxBurner::createPopupMenu()
 {
-    QMenu* menu = QMainWindow::createPopupMenu();
+    QPointer<QMenu> menu = QMainWindow::createPopupMenu();
 
-    QAction* action_toolButtonIconOnly = new QAction(tr("Icon only"), menu);
-    QAction* action_toolButtonTextOnly = new QAction(tr("Text only"), menu);
-    QAction* action_toolButtonTextBesideIcon = new QAction(tr("Text beside icon"), menu);
-    QAction* action_toolBarTextUnderIcon = new QAction(tr("Text under icon"), menu);
+    QPointer<QAction> action_toolButtonIconOnly = new QAction(tr("Icon only"), menu);
+    QPointer<QAction> action_toolButtonTextOnly = new QAction(tr("Text only"), menu);
+    QPointer<QAction> action_toolButtonTextBesideIcon = new QAction(tr("Text beside icon"), menu);
+    QPointer<QAction> action_toolBarTextUnderIcon = new QAction(tr("Text under icon"), menu);
 
-    connect(action_toolButtonIconOnly, SIGNAL(triggered()), this, SLOT(toolBar_toolButtonIconOnly()));
-    connect(action_toolButtonTextOnly, SIGNAL(triggered()), this, SLOT(toolBar_toolButtonTextOnly()));
-    connect(action_toolButtonTextBesideIcon, SIGNAL(triggered()), this, SLOT(toolBar_toolButtonTextBesideIcon()));
-    connect(action_toolBarTextUnderIcon, SIGNAL(triggered()), this, SLOT(toolBar_toolButtonTextUnderIcon()));
+    connect(action_toolButtonIconOnly, &QAction::triggered, this, &XBoxBurner::toolBar_toolButtonIconOnly);
+    connect(action_toolButtonTextOnly, &QAction::triggered, this, &XBoxBurner::toolBar_toolButtonTextOnly);
+    connect(action_toolButtonTextBesideIcon, &QAction::triggered, this, &XBoxBurner::toolBar_toolButtonTextBesideIcon);
+    connect(action_toolBarTextUnderIcon, &QAction::triggered, this, &XBoxBurner::toolBar_toolButtonTextUnderIcon);
 
     menu->addSeparator();
     menu->addAction(action_toolButtonIconOnly);
@@ -346,52 +267,52 @@ QMenu* XBoxBurner::createPopupMenu()
 void XBoxBurner::toolBar_toolButtonIconOnly()
 {
     ui->toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    // AppSettings.setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonIconOnly);
+    settings.data()->setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonIconOnly);
 }
 
 void XBoxBurner::toolBar_toolButtonTextOnly()
 {
     ui->toolBar->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    // AppSettings.setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonTextOnly);
+    settings.data()->setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonTextOnly);
 }
 
 void XBoxBurner::toolBar_toolButtonTextBesideIcon()
 {
     ui->toolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    // AppSettings.setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonTextBesideIcon);
+    settings.data()->setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonTextBesideIcon);
 }
 
 void XBoxBurner::toolBar_toolButtonTextUnderIcon()
 {
     ui->toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    //  AppSettings.setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonTextUnderIcon);
+    settings.data()->setValue("MainWindow/ToolButtonStyle", Qt::ToolButtonTextUnderIcon);
 }
 
 void XBoxBurner::keyReleaseEvent(QKeyEvent* keyEvent)
 {
-    if (keyEvent->modifiers() == Qt::ControlModifier)
+    if (keyEvent->modifiers() != Qt::ControlModifier)
+        return;
+
+    switch (keyEvent->key())
     {
-        switch (keyEvent->key())
-        {
-        case Qt::Key_B:
-            burn_triggered();
-            break;
-        case Qt::Key_L:
-            log_triggered();
-            break;
-        case Qt::Key_S:
-            startBurn_triggered();
-            break;
-        case Qt::Key_Y:
-            verify_triggered();
-            break;
-        case Qt::Key_R:
-            reset_triggered();
-            break;
-        case Qt::Key_Q:
-            exit_triggered();
-            break;
-        }
+    case Qt::Key_B:
+        burn_triggered();
+        break;
+    case Qt::Key_L:
+        log_triggered();
+        break;
+    case Qt::Key_S:
+        startBurn_triggered();
+        break;
+    case Qt::Key_Y:
+        verify_triggered();
+        break;
+    case Qt::Key_R:
+        reset_triggered();
+        break;
+    case Qt::Key_Q:
+        exit_triggered();
+        break;
     }
 }
 

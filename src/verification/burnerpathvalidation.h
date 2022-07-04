@@ -18,21 +18,40 @@
 
 #pragma once
 
-#include "burnerstage.h"
+#include "burner/burnerwidgets.h"
+#include "burner/burnerstartstage.h"
+#include "dependencies/dvdrwtoolstooldependencyfactory.h"
 
-class BurnerStartStage : public BurnerStage
+#include <QObject>
+#include <QProcess>
+#include <QPointer>
+#include <QStringList>
+
+class BurnerPathValidation : public QObject
 {
+    Q_OBJECT
+
 public:
-    BurnerStartStage(QSharedPointer<BurnerWidgets> new_burner_widgets);
-    bool handle() override;
+    explicit BurnerPathValidation(QSharedPointer<BurnerWidgets> new_burner_widgets,
+                                  QPointer<BurnerStage> new_start_burner_stage);
+    void start();
+
+protected:
+    void fillWithBurnerData();
+    void clearData();
+    void log(const int exit_code,
+             const QProcess::ExitStatus exit_status);
 
 private slots:
-    void burnProcess_finished(const int exitCode,
-                              const QProcess::ExitStatus exitStatus);
-    void burnProcess_readyReadStandardOutput();
+    void catchAndLogProcessOutput();
+    void useProcessData(const int exit_code,
+                        const QProcess::ExitStatus exit_status);
 
 private:
-    void updateWidgetsWithGrowisoData(const QString& growisofs_data);
-    void updateWidgetsWithProgressData(QRegularExpressionMatch progress_line_match);
-    const QString layerBreak();
+   QSharedPointer<BurnerWidgets> burner_widgets;
+   QPointer<BurnerStage> start_burner_stage;
+   QSharedPointer<DvdrwtoolsToolDependencyFactory> media_info_dependency;
+   QProcess* process;
+   QStringList dvd_info;
 };
+

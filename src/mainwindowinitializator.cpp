@@ -40,7 +40,7 @@ MainWindowInitializator::MainWindowInitializator(const ApplicationInformations& 
     fillPlainTextWithLogs(createListOfExternalDependencies(), new_applications_informations);
     initializeSettingsLoad();
     preparePathCompleters();
-    showStatusBarMessage(tr("Ready."));
+    ui->statusBar->showMessage(tr("Ready."), 0);
     prepareFontStyleForInformationLabel();
 }
 

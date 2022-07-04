@@ -23,12 +23,14 @@
 
 #include <QMainWindow>
 #include <QtGui>
+#include <QPointer>
 
 #include "backup.h"
 #include "constants/applicationinformations.h"
 #include "settings/settings.h"
 #include "verification/verification.h"
 #include "burner/currentburningverificationstage.h"
+#include "verification/burnerpathvalidation.h"
 
 #ifdef Q_OS_WIN
   #include <stdio.h>
@@ -49,8 +51,6 @@ public:
     explicit XBoxBurner(const ApplicationInformations& new_applications_informations,
                         QWidget* parent = 0);
     ~XBoxBurner();
-
-    void showStatusBarMessage(const QString& text);
 
 protected:
     QMenu* createPopupMenu();
@@ -80,10 +80,6 @@ protected slots:
     void on_push_button_save_clicked();
     void on_push_button_logs_reset_clicked();
 
-    void getMediaInfo_readyReadStandardOutput();
-    void getMediaInfo_finished(const int exitCode,
-                               const QProcess::ExitStatus exitStatus);
-
     void toolBar_toolButtonIconOnly();
     void toolBar_toolButtonTextOnly();
     void toolBar_toolButtonTextBesideIcon();
@@ -92,14 +88,13 @@ protected slots:
 private:
     QSharedPointer<BurnerWidgets> createStructFromBurnerWidgets();
     QPointer<CurrentBurningVerificationStage> createBurnerSteps();
-
+    void setPixmapForXboxLabel(int index);
+    void updateDvdComboBoxForDvdRFormat(int index);
     void initializeSettingsSave();
+    const QSharedPointer<ListSettingsWidget> createListOfSaveLoadStrategies();
 
     const ApplicationInformations applications_informations;
     QPointer<Verification> verification;
     QPointer<BurnerStage> start_burner_stage;
-    QString dvdrwmediainfo, imageMd5sum, dvdMd5sum;
-    QProcess *checkMediaProcess;
-    QStringList mediaInfo;
-    qint64 md5ProgressMax;
+    QPointer<BurnerPathValidation> burner_path_validation;
 };

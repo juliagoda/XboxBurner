@@ -43,37 +43,36 @@ bool Backup::create()
 
 void Backup::log()
 {
-    bool result = burner_widgets.data()->backup_future_watcher->result();
+    bool backup_not_created = !burner_widgets.data()->backup_future_watcher->result();
     burner_progress_bars_setup.data()->restoreRingAndUnitProgressBarsValues();
 
-    if (result)
-    {
-        burner_widgets.data()->status_bar->showMessage(QObject::tr("Creation backup of game image successfully!"), 0);
-        burner_widgets.data()->plain_text_edit_with_logs->appendPlainText("Creation backup of game image successfully!");
-        resizeImage();
-    }
-    else
+    if (backup_not_created)
     {
         burner_widgets.data()->status_bar->showMessage(QObject::tr("Creation backup of game image failed!"), 0);
         burner_widgets.data()->plain_text_edit_with_logs->appendPlainText("Creation backup of game image failed! Burn process stopped!");
+        return;
     }
+
+    burner_widgets.data()->status_bar->showMessage(QObject::tr("Creation backup of game image successfully!"), 0);
+    burner_widgets.data()->plain_text_edit_with_logs->appendPlainText("Creation backup of game image successfully!");
+    resizeImage();
 }
 
 void Backup::resizeImage()
 {
     qint64 size = Q_INT64_C(8547991552);
     QFile file(burner_widgets.data()->lineedit_image_path->text().simplified());
+    bool resizeFailed = !file.resize(size);
 
-    if (file.resize(size))
-    {
-        QSharedPointer<BurnerStartStage> burner_start_stage = QSharedPointer<BurnerStartStage>(new BurnerStartStage(burner_widgets));
-        burner_start_stage->handle();
-    }
-    else
+    if (resizeFailed)
     {
         burner_widgets.data()->status_bar->showMessage(QObject::tr("Resize game image failed!"), 0);
         burner_widgets.data()->plain_text_edit_with_logs->appendPlainText("Resize game image failed! Burn process stopped!");
+        return;
     }
+
+    QSharedPointer<BurnerStartStage> burner_start_stage = QSharedPointer<BurnerStartStage>(new BurnerStartStage(burner_widgets));
+    burner_start_stage->handle();
 }
 
 QSharedPointer<BurnerProgressBarsWidgets> Backup::createStructFromBurnerWidgets(QSharedPointer<BurnerWidgets> new_burner_widgets)

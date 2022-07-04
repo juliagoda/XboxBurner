@@ -26,9 +26,7 @@ DvdrwtoolsToolDependencyFactory::DvdrwtoolsToolDependencyFactory(const QString& 
     : tool_name { new_tool_name }
     , file { new QFile(getFileFullName(new_tool_name)) }
     , version { getVersion(file->fileName()) }
-
-{
-}
+{}
 
 const QStringList DvdrwtoolsToolDependencyFactory::showToolDetectionInformations()
 {
@@ -50,5 +48,8 @@ const QString& DvdrwtoolsToolDependencyFactory::getToolVersion()
 
 const QString DvdrwtoolsToolDependencyFactory::getFileNamePath()
 {
-    return file.data()->fileName();
+    if (toolExistsInSystem())
+      return file.data()->fileName();
+
+    return QString("");
 }

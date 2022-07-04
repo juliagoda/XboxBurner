@@ -28,13 +28,11 @@ CurrentBurningVerificationStage::CurrentBurningVerificationStage(QSharedPointer<
 
 bool CurrentBurningVerificationStage::handle()
 {
-    if (burning)
-    {
-        if (BoxMessages::cancelBurnProcessMessage(new QWidget) == QMessageBox::Ok)
-            burn_process->kill();
+    if (burning && BoxMessages::cancelBurnProcessMessage(new QWidget) == QMessageBox::Ok)
+        burn_process->kill();
 
+    if (burning)
         return false;
-    }
 
     return BurnerStage::handle();
 }

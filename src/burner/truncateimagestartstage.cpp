@@ -38,10 +38,12 @@ bool TruncateImageStartStage::handle()
 
     burner_widgets.data()->status_bar->showMessage(QObject::tr("Truncating XGD3 image..."));
     qint64 size = Q_INT64_C(8547991552);
-    QString fileName = burner_widgets.data()->lineedit_image_path->text().simplified();
-    QFile file(fileName);
+    QString file_name = burner_widgets.data()->lineedit_image_path->text().simplified();
+    QFile file(file_name);
+    const bool is_file_size_not_bigger_than_limit = file.size() <= size;
+    const bool backup_creation_not_checked = !burner_widgets.data()->check_box_backup_creation->isChecked();
 
-    if (file.size() <= size || !burner_widgets.data()->check_box_backup_creation->isChecked())
+    if (is_file_size_not_bigger_than_limit || backup_creation_not_checked)
         return BurnerStage::handle();
 
     burner_widgets.data()->status_bar->showMessage(Messages::backup_creation);
@@ -49,9 +51,9 @@ bool TruncateImageStartStage::handle()
     burner_progress_bars_setup.data()->resetRingAndUnitProgressBarsValues();
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QFuture<bool> backupFuture = QtConcurrent::run(backup.data(), &Backup::create);
+    QFuture<bool> backup_future = QtConcurrent::run(backup.data(), &Backup::create);
 #else
-    QFuture<bool> backupFuture = QtConcurrent::run(&Backup::create, backup.data());
+    QFuture<bool> backup_future = QtConcurrent::run(&Backup::create, backup.data());
 #endif
-    burner_widgets.data()->backup_future_watcher->setFuture(backupFuture);
+    burner_widgets.data()->backup_future_watcher->setFuture(backup_future);
 }

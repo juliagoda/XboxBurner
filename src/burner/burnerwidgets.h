@@ -26,6 +26,7 @@
 #include <QProgressBar>
 #include <QFutureWatcher>
 #include <QStatusBar>
+#include <QLabel>
 
 struct BurnerWidgets
 {
@@ -50,6 +51,7 @@ struct BurnerWidgets
     QCheckBox* check_box_backup_creation = nullptr;
     QStatusBar* status_bar = nullptr;
     QFrame* status_frame = nullptr;
+    QLabel* label_info = nullptr;
 };
 
 struct BurnerProgressBarsWidgets
